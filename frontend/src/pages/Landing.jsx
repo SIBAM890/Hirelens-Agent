@@ -1,9 +1,10 @@
+```
 import React from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { ArrowRight, Bot, Code, Cpu, ShieldCheck, UserCheck, CheckCircle, BarChart3, Play, Activity, Globe, Zap } from 'lucide-react';
-import aiRecruiter from '../assets/ai_recruiter_matte.png';
-import dashboardClean from '../assets/dashboard_clean.png';
+import aiRecruiter from '../assets/ai_recruiter_matte.svg';
+import dashboardClean from '../assets/dashboard_clean.svg';
 
 const Landing = () => {
     const { scrollY } = useScroll();

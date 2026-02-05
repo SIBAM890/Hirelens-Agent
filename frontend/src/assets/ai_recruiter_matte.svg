@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 500" fill="none">
+  <rect width="500" height="500" rx="40" fill="#f8fafc"/>
+  <circle cx="250" cy="200" r="80" fill="#e2e8f0"/>
+  <circle cx="220" cy="190" r="10" fill="#334155"/>
+  <circle cx="280" cy="190" r="10" fill="#334155"/>
+  <rect x="230" y="240" width="40" height="60" rx="20" fill="#94a3b8"/>
+  <path d="M150 450 C150 350 350 350 350 450" stroke="#cbd5e1" stroke-width="20" stroke-linecap="round"/>
+  <text x="50%" y="90%" text-anchor="middle" font-family="sans-serif" font-size="24" fill="#64748b">AI Recruiter</text>
+</svg>
