@@ -76,5 +76,7 @@ Desktop.ini
 # Project Specific
 backend/uploads/
 backend/db.sqlite3
+*.db
+*.sqlite
 brain/
 .gemini/

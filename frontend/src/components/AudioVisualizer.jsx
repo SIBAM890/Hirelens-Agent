@@ -10,10 +10,10 @@ const AudioVisualizer = ({ state }) => {
     // Define colors based on state
     const getColor = () => {
         switch (state) {
-            case 'SPEAKING': return 'bg-neon-blue shadow-[0_0_15px_#00f3ff]';
-            case 'LISTENING': return 'bg-green-500 shadow-[0_0_15px_#22c55e]';
-            case 'THINKING': return 'bg-neon-purple shadow-[0_0_15px_#bc13fe]';
-            default: return 'bg-gray-600';
+            case 'SPEAKING': return 'bg-blue-500 shadow-[0_0_15px_rgba(59,130,246,0.5)]';
+            case 'LISTENING': return 'bg-green-500 shadow-[0_0_15px_rgba(34,197,94,0.5)]';
+            case 'THINKING': return 'bg-indigo-500 shadow-[0_0_15px_rgba(99,102,241,0.5)]';
+            default: return 'bg-gray-300';
         }
     };
 

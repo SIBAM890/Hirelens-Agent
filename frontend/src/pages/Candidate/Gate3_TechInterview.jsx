@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Mic, MicOff, Video } from 'lucide-react';
+import { Mic, MicOff, Video, Sparkles, User, Bot } from 'lucide-react';
 import SpeechRecognition, { useSpeechRecognition } from 'react-speech-recognition';
 import { candidateAPI } from '../../services/api';
 import AudioVisualizer from '../../components/AudioVisualizer'; // <--- Imported custom component
@@ -14,9 +14,6 @@ const Gate3_TechInterview = () => {
     const speak = (text) => {
         setAiState('SPEAKING');
         const utterance = new SpeechSynthesisUtterance(text);
-        // Optional: Select a specific voice if available
-        // const voices = window.speechSynthesis.getVoices();
-        // utterance.voice = voices[0]; 
         utterance.rate = 1.0;
         utterance.onend = () => setAiState('IDLE');
         window.speechSynthesis.speak(utterance);
@@ -43,79 +40,107 @@ const Gate3_TechInterview = () => {
     };
 
     return (
-        <div className="min-h-screen bg-black flex flex-col items-center justify-center relative overflow-hidden text-white">
-            {/* Background Ambience */}
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-neon-purple/10 via-black to-black" />
+        <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center relative overflow-hidden font-sans">
+            {/* Background Ambience - Subtle Light Gradient */}
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_var(--tw-gradient-stops))] from-blue-50 via-white to-gray-50 opacity-70" />
 
             {/* Header */}
-            <div className="absolute top-6 left-6 flex items-center gap-2">
-                <div className="w-3 h-3 bg-red-500 rounded-full animate-pulse" />
-                <span className="font-mono text-sm tracking-widest text-red-500">LIVE INTERVIEW SESSION</span>
+            <div className="absolute top-8 left-8 flex items-center gap-3 bg-white px-4 py-2 rounded-full shadow-sm border border-gray-100 z-20">
+                <div className="w-2.5 h-2.5 bg-red-500 rounded-full animate-pulse shadow-[0_0_8px_rgba(239,68,68,0.6)]" />
+                <span className="font-bold text-xs tracking-wider text-primary">LIVE INTERVIEW SESSION</span>
             </div>
 
             {/* 🧠 THE AI AVATAR & VISUALIZER */}
-            <div className="relative z-10 flex flex-col items-center mb-12">
+            <div className="relative z-10 flex flex-col items-center mb-8 mt-10">
                 <div className="relative">
                     {/* Glowing Aura */}
                     <motion.div
                         animate={{
-                            scale: aiState === 'SPEAKING' ? [1, 1.2, 1] : 1,
-                            opacity: aiState === 'SPEAKING' ? 0.8 : 0.3,
+                            scale: aiState === 'SPEAKING' ? [1, 1.1, 1] : 1,
+                            opacity: aiState === 'SPEAKING' ? 0.3 : 0.1,
                         }}
                         transition={{ duration: 1.5, repeat: Infinity }}
-                        className={`w-48 h-48 rounded-full blur-2xl absolute top-0 left-0 -z-10 ${aiState === 'LISTENING' ? 'bg-green-500' : 'bg-neon-blue'
+                        className={`w-56 h-56 rounded-full blur-3xl absolute top-0 left-0 -z-10 ${aiState === 'LISTENING' ? 'bg-green-400' : 'bg-primary'
                             }`}
                     />
 
                     {/* The Orb */}
-                    <div className="w-48 h-48 rounded-full border-4 border-white/10 backdrop-blur-md flex items-center justify-center bg-black/40 shadow-2xl">
-                        {/* If we had a 3D model, it would go here. For now, a dynamic gradient orb */}
-                        <div className={`w-40 h-40 rounded-full bg-gradient-to-br transition-all duration-1000 ${aiState === 'THINKING' ? 'from-neon-purple to-pink-600 animate-spin' :
-                                aiState === 'SPEAKING' ? 'from-neon-blue to-cyan-400' :
-                                    'from-gray-700 to-gray-900'
+                    <div className="w-48 h-48 rounded-full border-8 border-white shadow-2xl flex items-center justify-center bg-gray-50 relative overflow-hidden">
+                        <div className={`absolute inset-0 opacity-20 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')]`} />
+
+                        {/* Dynamic Core */}
+                        <div className={`w-36 h-36 rounded-full bg-gradient-to-br transition-all duration-1000 shadow-inner ${aiState === 'THINKING' ? 'from-indigo-600 to-purple-600 animate-spin-slow' :
+                                aiState === 'SPEAKING' ? 'from-blue-500 to-cyan-400 scale-105' :
+                                    'from-gray-300 to-gray-400'
                             }`} />
+
+                        {/* Status Icon Overlay */}
+                        <div className="absolute inset-0 flex items-center justify-center text-white drop-shadow-md">
+                            {aiState === 'THINKING' && <Sparkles className="animate-pulse" size={40} />}
+                            {aiState === 'LISTENING' && <Mic className="animate-bounce" size={40} />}
+                        </div>
                     </div>
                 </div>
 
                 {/* 🎵 THE VISUALIZER COMPONENT */}
-                <div className="mt-8">
+                <div className="mt-8 scale-75 opacity-70">
                     <AudioVisualizer state={aiState} />
                 </div>
             </div>
 
-            {/* Transcript Log */}
-            <div className="w-full max-w-3xl h-64 overflow-y-auto p-6 bg-white/5 rounded-2xl border border-white/10 backdrop-blur-sm mb-8 scrollbar-hide">
-                {messages.length === 0 && <p className="text-gray-500 text-center italic mt-20">"Hello, I am your AI Interviewer. Introduce yourself..."</p>}
+            {/* Chat/Transcript Log */}
+            <div className="w-full max-w-2xl h-[400px] overflow-y-auto p-6 bg-white rounded-3xl border border-gray-100 shadow-xl shadow-gray-200/50 mb-10 scrollbar-thin scrollbar-thumb-gray-200">
+                {messages.length === 0 && (
+                    <div className="flex flex-col items-center justify-center h-full text-center space-y-4 opacity-60">
+                        <div className="w-16 h-16 bg-blue-50 rounded-2xl flex items-center justify-center text-primary mb-2">
+                            <Bot size={32} />
+                        </div>
+                        <p className="text-gray-500 font-medium">"Hello, I am your AI Interviewer.<br />Please introduce yourself to start."</p>
+                    </div>
+                )}
+
                 {messages.map((m, i) => (
-                    <div key={i} className={`mb-4 flex ${m.role === 'ai' ? 'justify-start' : 'justify-end'}`}>
-                        <div className={`max-w-[80%] p-4 rounded-xl ${m.role === 'ai'
-                                ? 'bg-neon-blue/10 border border-neon-blue/30 text-cyan-100 rounded-tl-none'
-                                : 'bg-neon-purple/20 border border-neon-purple/30 text-purple-100 rounded-tr-none'
-                            }`}>
-                            <span className="text-[10px] opacity-50 block mb-1 font-mono tracking-wider">{m.role.toUpperCase()}</span>
-                            {m.text}
+                    <div key={i} className={`mb-6 flex w-full ${m.role === 'ai' ? 'justify-start' : 'justify-end'}`}>
+                        <div className={`flex max-w-[85%] items-end gap-2 ${m.role === 'ai' ? 'flex-row' : 'flex-row-reverse'}`}>
+                            {/* Avatar Icons */}
+                            <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 ${m.role === 'ai' ? 'bg-indigo-100 text-indigo-600' : 'bg-gray-100 text-gray-600'}`}>
+                                {m.role === 'ai' ? <Bot size={16} /> : <User size={16} />}
+                            </div>
+
+                            <div className={`p-4 rounded-2xl shadow-sm text-sm leading-relaxed ${m.role === 'ai'
+                                ? 'bg-gray-50 border border-gray-100 text-gray-700 rounded-bl-none'
+                                : 'bg-primary text-white rounded-br-none'
+                                }`}>
+                                {m.text}
+                            </div>
                         </div>
                     </div>
                 ))}
-                {transcript && <div className="text-gray-400 text-center italic animate-pulse">... {transcript}</div>}
+
+                {transcript && (
+                    <div className="flex justify-end mt-4 px-4">
+                        <div className="text-gray-400 text-sm italic border border-dashed border-gray-300 rounded-lg px-4 py-2 animate-pulse bg-gray-50">
+                            Listening: "{transcript}..."
+                        </div>
+                    </div>
+                )}
             </div>
 
             {/* Controls */}
-            <div className="flex items-center gap-6">
+            <div className="flex flex-col items-center gap-4 relative z-20">
                 <button
                     onClick={listening ? handleSend : SpeechRecognition.startListening}
-                    className={`p-6 rounded-full transition-all duration-300 transform hover:scale-110 active:scale-95 ${listening
-                            ? 'bg-red-500 shadow-[0_0_30px_red]'
-                            : 'bg-neon-blue shadow-[0_0_30px_#00f3ff]'
+                    className={`p-6 rounded-full transition-all duration-300 transform hover:scale-105 active:scale-95 shadow-lg ${listening
+                        ? 'bg-red-500 shadow-red-200 hover:shadow-red-300'
+                        : 'bg-primary shadow-blue-200 hover:shadow-blue-300 hover:bg-primary/90'
                         }`}
                 >
-                    {listening ? <MicOff size={32} className="text-white" /> : <Mic size={32} className="text-black" />}
+                    {listening ? <MicOff size={32} className="text-white" /> : <Mic size={32} className="text-white" />}
                 </button>
+                <p className="text-gray-400 font-medium text-sm tracking-wide">
+                    {listening ? "Listening... (Tap to Send)" : "Tap Microphone to Speak"}
+                </p>
             </div>
-
-            <p className="text-gray-500 mt-4 font-mono text-sm uppercase tracking-widest">
-                {listening ? "Listening..." : "Tap Mic to Respond"}
-            </p>
         </div>
     );
 };

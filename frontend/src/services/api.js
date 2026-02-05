@@ -34,6 +34,8 @@ export const candidateAPI = {
     // Candidate Flow
     getJobs: () => api.get('/candidate/jobs'),
     startApplication: (jobId, candidateId) => api.post(`/candidate/apply/${jobId}?candidate_id=${candidateId}`),
+
+    getQuiz: (appId) => api.get(`/candidate/quiz/${appId}`),
     submitQuiz: (appId, score) => api.post(`/candidate/submit-quiz/${appId}?score=${score}`),
     submitCode: (appId, code, lang) => api.post(`/candidate/submit-code/${appId}`, { code, language: lang }),
 

@@ -59,6 +59,24 @@ def start_application(job_id: int, candidate_id: int, db: Session = Depends(get_
     return {"message": "Application Started", "application_id": new_app.id, "stage": "GATE_1"}
 
 # --- GATE 1: QUIZ ---
+from app.services.quiz_engine import generate_quiz_from_text
+
+@router.get("/quiz/{application_id}")
+def get_quiz(application_id: int, db: Session = Depends(get_db)):
+    app = db.query(Assessment).filter(Assessment.id == application_id).first()
+    if not app: raise HTTPException(status_code=404, detail="App not found")
+    
+    job = db.query(Job).filter(Job.id == app.job_id).first()
+    if not job: raise HTTPException(status_code=404, detail="Job not found")
+
+    # Generate Logic
+    context = f"Job Title: {job.title}\nJob Description: {job.description}"
+    questions = generate_quiz_from_text(context)
+    
+    return {"questions": questions}
+
+
+# --- GATE 1: QUIZ ---
 @router.post("/submit-quiz/{application_id}")
 def submit_quiz(application_id: int, score: float, db: Session = Depends(get_db)):
     app = db.query(Assessment).filter(Assessment.id == application_id).first()

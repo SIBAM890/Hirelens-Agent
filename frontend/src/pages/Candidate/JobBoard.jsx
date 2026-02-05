@@ -51,48 +51,51 @@ const JobBoard = () => {
     };
 
     return (
-        <div className="min-h-screen bg-black text-white p-8 pt-24">
+        <div className="min-h-screen bg-gray-50 p-8 pt-24 font-sans">
             <div className="max-w-5xl mx-auto">
-                <h1 className="text-4xl font-bold mb-2">Open Positions</h1>
-                <p className="text-gray-400 mb-12">Prove your skills to our AI Agents and get hired instantly.</p>
+                <div className="mb-12">
+                    <h1 className="text-4xl font-bold text-primary mb-3">Open Positions</h1>
+                    <p className="text-gray-500 text-lg">Prove your skills to our AI Agents and get hired instantly.</p>
+                </div>
 
                 <div className="grid md:grid-cols-2 gap-6">
-                    {jobs.length === 0 && <p className="text-gray-500">No active job openings found.</p>}
+                    {jobs.length === 0 && (
+                        <div className="col-span-2 text-center py-20 bg-white rounded-2xl border border-gray-100 border-dashed">
+                            <Briefcase className="w-12 h-12 text-gray-300 mx-auto mb-4" />
+                            <p className="text-gray-500 font-medium">No active job openings found.</p>
+                            <p className="text-sm text-gray-400 mt-1">Please check back later or ask an HR Manager to post a job.</p>
+                        </div>
+                    )}
 
                     {jobs.map(job => (
-                        <div key={job.id} className="bg-neon-surface border border-white/10 p-8 rounded-2xl hover:shadow-[0_0_30px_rgba(0,243,255,0.1)] transition-all relative overflow-hidden group">
+                        <div key={job.id} className="bg-white border border-gray-100 p-8 rounded-2xl hover:shadow-xl hover:shadow-accent/5 hover:border-accent/20 transition-all group relative overflow-hidden">
 
-                            {/* Decorative Gradient */}
-                            <div className="absolute top-0 right-0 w-32 h-32 bg-neon-blue/10 rounded-full blur-2xl -mr-16 -mt-16 transition-all group-hover:bg-neon-blue/20" />
-
-                            <div className="relative z-10">
-                                <div className="flex items-start justify-between mb-4">
-                                    <div className="p-3 bg-white/5 rounded-lg">
-                                        <Briefcase className="text-neon-blue" />
-                                    </div>
-                                    <span className="text-xs font-mono bg-neon-purple/20 text-neon-purple px-2 py-1 rounded">
-                                        Exp: Open
-                                    </span>
+                            <div className="flex items-start justify-between mb-6">
+                                <div className="p-3 bg-blue-50 text-accent rounded-xl group-hover:scale-110 transition-transform">
+                                    <Briefcase size={24} />
                                 </div>
-
-                                <h3 className="text-2xl font-bold mb-2">{job.title}</h3>
-                                <p className="text-gray-400 text-sm mb-4 line-clamp-2">{job.description}</p>
-
-                                <div className="flex flex-wrap gap-2 mb-8">
-                                    {job.skills?.map(skill => (
-                                        <span key={skill} className="text-xs border border-gray-700 px-2 py-1 rounded text-gray-400">
-                                            {skill}
-                                        </span>
-                                    ))}
-                                </div>
-
-                                <button
-                                    onClick={() => handleApply(job.id)}
-                                    className="w-full bg-white text-black font-bold py-3 rounded-lg flex items-center justify-center gap-2 hover:bg-neon-blue hover:shadow-[0_0_15px_#00f3ff] transition-all"
-                                >
-                                    <Code size={18} /> Take Challenge
-                                </button>
+                                <span className="text-xs font-semibold bg-gray-100 text-gray-600 px-3 py-1.5 rounded-full">
+                                    Active
+                                </span>
                             </div>
+
+                            <h3 className="text-xl font-bold text-primary mb-2 group-hover:text-accent transition-colors">{job.title}</h3>
+                            <p className="text-gray-500 text-sm mb-6 line-clamp-2 leading-relaxed">{job.description}</p>
+
+                            <div className="flex flex-wrap gap-2 mb-8">
+                                {job.skills?.map(skill => (
+                                    <span key={skill} className="text-xs font-medium bg-gray-50 text-gray-600 px-2.5 py-1 rounded-md border border-gray-100">
+                                        {skill}
+                                    </span>
+                                ))}
+                            </div>
+
+                            <button
+                                onClick={() => handleApply(job.id)}
+                                className="w-full bg-primary text-white font-semibold py-3.5 rounded-xl flex items-center justify-center gap-2 hover:bg-accent transition-all shadow-lg shadow-gray-200 hover:shadow-accent/20"
+                            >
+                                <Code size={18} /> Take AI Challenge <ArrowRight size={16} />
+                            </button>
                         </div>
                     ))}
                 </div>
