@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import { ArrowRight, Bot, Code, ShieldCheck, UserCheck, BarChart3, Play, Zap, Check, Star } from 'lucide-react';
 import aiRecruiter from '../assets/ai_recruiter_matte.svg';
 import dashboardClean from '../assets/dashboard_clean.svg';
+import logo from '../assets/HireLens.png';
 
 const Landing = () => {
     const { scrollY } = useScroll();
@@ -28,26 +29,26 @@ const Landing = () => {
                 <motion.div
                     initial={{ y: -100, opacity: 0 }}
                     animate={{ y: 0, opacity: 1 }}
-                    className="glass px-8 py-4 rounded-full flex items-center justify-between w-full max-w-5xl"
+                    className="glass px-8 py-4 rounded-full flex items-center justify-between w-full max-w-6xl shadow-2xl shadow-blue-900/5 backdrop-blur-xl border border-white/40"
                 >
                     <div className="flex items-center gap-3">
-                        <div className="bg-accent/10 p-2 rounded-xl">
-                            <Bot className="w-6 h-6 text-accent" />
-                        </div>
-                        <span className="font-bold text-lg tracking-tight text-slate-800">HireLens<span className="text-accent">.</span></span>
+                        <img src={logo} alt="HireLens Logo" className="w-9 h-9 object-contain" />
+                        <span className="font-bold text-xl tracking-tight text-slate-800 font-display">HireLens<span className="text-accent">.</span></span>
                     </div>
 
-                    <div className="hidden md:flex items-center gap-8 text-sm font-medium text-slate-600">
+                    <div className="hidden md:flex items-center gap-1 bg-slate-100/50 p-1 rounded-full border border-slate-200/50">
                         {['Features', 'How it Works', 'Pricing', 'Enterprise'].map((item) => (
-                            <a key={item} href={`#${item.toLowerCase().replace(/\s/g, '-')}`} className="hover:text-accent transition-colors">
+                            <NavLink key={item} href={`#${item.toLowerCase().replace(/\s/g, '-')}`}>
                                 {item}
-                            </a>
+                            </NavLink>
                         ))}
                     </div>
 
                     <div className="flex items-center gap-4">
-                        <Link to="/login" className="text-sm font-semibold text-slate-600 hover:text-slate-900 hidden sm:block">Log in</Link>
-                        <Link to="/register?role=CANDIDATE" className="btn-primary py-2.5 px-5 text-sm">
+                        <Link to="/register?role=HR" className="text-sm font-bold text-slate-600 hover:text-accent hidden lg:block transition-colors">For Employers</Link>
+                        <div className="h-5 w-px bg-slate-200 hidden lg:block" />
+                        <Link to="/login" className="text-sm font-bold text-slate-600 hover:text-slate-900 hidden sm:block transition-colors">Log in</Link>
+                        <Link to="/register?role=CANDIDATE" className="btn-primary py-2.5 px-6 text-sm hover:shadow-xl hover:shadow-accent/20">
                             For Candidates
                         </Link>
                     </div>
@@ -97,17 +98,26 @@ const Landing = () => {
                             transition={{ delay: 0.6 }}
                             className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-20"
                         >
-                            <Link to="/register?role=HR" className="btn-primary text-lg px-8 py-4 w-full sm:w-auto">
+                            <Link to="/register?role=HR" className="btn-primary text-lg px-8 py-4 w-full sm:w-auto hover:scale-105">
                                 Start Hiring for Free <ArrowRight size={20} />
                             </Link>
-                            <button className="btn-secondary text-lg px-8 py-4 w-full sm:w-auto">
+                            <button
+                                onClick={() => alert("Demo video coming soon!")}
+                                className="btn-secondary text-lg px-8 py-4 w-full sm:w-auto hover:bg-slate-50"
+                            >
                                 <Play size={20} className="fill-slate-700" /> Watch Demo
                             </button>
                         </motion.div>
                     </motion.div>
 
-                    {/* 3D Tilt Dashboard Preview */}
+                    {/* 3D Tilt Dashboard Preview (Placeholder until real 3D asset is ready) */}
                     <TiltCard>
+                        {/* ... (TiltCard content) ... */}
+                        {/* Note: I cannot replace the whole TiltCard content easily without including it all. 
+                        I will just focus on the specific button and valid ranges. 
+                        Wait, I can't split the replacement if I want to do multiple things in one file efficiently 
+                        unless I use multi_replace. Let me use multi_replace for this file as there are scattered changes.
+                    */}
                         <div className="relative rounded-2xl border border-slate-200 shadow-2xl bg-white/50 backdrop-blur-sm p-3 mx-auto max-w-5xl group">
                             <img src={dashboardClean} alt="Dashboard" className="w-full h-auto rounded-xl shadow-inner border border-slate-100" />
 
@@ -152,7 +162,7 @@ const Landing = () => {
             <section className="py-12 border-y border-slate-200 bg-white/50">
                 <div className="page-container flex flex-col md:flex-row items-center justify-between gap-8">
                     <p className="text-sm font-semibold text-slate-500 uppercase tracking-widest whitespace-nowrap">Trusted by innovators at</p>
-                    <div className="flex flex-wrap items-center justify-center gap-12 sm:gap-16 opacity-40 hover:opacity-100 transition-opacity duration-500">
+                    <div className="flex flex-wrap items-center justify-center gap-12 sm:gap-16 opacity-40 hover:opacity-100 transition-opacity duration-500 grayscale hover:grayscale-0 cursor-default">
                         {['Airbnb', 'Linear', 'Vercel', 'Notion', 'Stripe'].map(brand => (
                             <span key={brand} className="text-2xl font-bold font-display text-slate-800">{brand}</span>
                         ))}
@@ -161,7 +171,7 @@ const Landing = () => {
             </section>
 
             {/* Features Grid */}
-            <section className="py-32 relative overflow-hidden" id="features">
+            <section className="py-32 relative overflow-hidden bg-slate-50" id="features">
                 <div className="page-container relative z-10">
                     <div className="text-center max-w-3xl mx-auto mb-20">
                         <span className="text-accent font-bold tracking-widest text-sm uppercase">Why HireLens?</span>
@@ -182,50 +192,120 @@ const Landing = () => {
                 </div>
             </section>
 
-            {/* CTA Section */}
-            <section className="py-32 bg-slate-900 relative overflow-hidden text-center">
-                <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_var(--tw-gradient-stops))] from-slate-800 via-slate-900 to-black opacity-40" />
-                <div className="page-container relative z-10">
-                    <h2 className="text-4xl md:text-6xl font-bold text-white mb-8 tracking-tight">Ready to modernize your hiring?</h2>
-                    <p className="text-xl text-slate-400 mb-12 max-w-2xl mx-auto">
-                        Join 2,000+ engineering teams hiring better, faster, and fairer with HireLens.
-                    </p>
-                    <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-                        <Link to="/register" className="bg-white text-slate-900 font-bold px-8 py-4 rounded-xl shadow-xl hover:bg-gray-100 transition-all text-lg flex items-center gap-2">
-                            Get Started Now <ArrowRight size={20} />
-                        </Link>
-                        <p className="text-slate-500 text-sm mt-4 sm:mt-0 sm:ml-6">No credit card required</p>
+            {/* How It Works Section */}
+            <section className="py-32 bg-white" id="how-it-works">
+                <div className="page-container">
+                    <div className="flex flex-col md:flex-row items-center gap-16">
+                        <div className="flex-1 space-y-8">
+                            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 text-blue-600 text-xs font-bold tracking-wide">
+                                <Zap size={14} className="fill-blue-600" /> FAST & EFFICIENT
+                            </div>
+                            <h2 className="text-4xl font-bold text-slate-900">Seamless Integration into your existing workflow.</h2>
+                            <p className="text-lg text-slate-500 leading-relaxed">
+                                HireLens connects directly with your ATS. Create a job agent in seconds by pasting a JD URL. The agent handles everything from outreach to scheduling final interviews.
+                            </p>
+                            <ul className="space-y-4">
+                                {[
+                                    "One-click Job Agent deployment",
+                                    "Automated candidate sourcing from LinkedIn",
+                                    "24/7 AI Interviews & Technical Assessments",
+                                    "Instant Ranking & Detailed Reports"
+                                ].map((item, i) => (
+                                    <li key={i} className="flex items-center gap-3 text-slate-700 font-medium">
+                                        <div className="bg-green-100 p-1 rounded-full">
+                                            <Check size={16} className="text-green-600" />
+                                        </div>
+                                        {item}
+                                    </li>
+                                ))}
+                            </ul>
+                        </div>
+                        <div className="flex-1">
+                            <img src={aiRecruiter} alt="How It Works" className="w-full rounded-2xl shadow-2xl skew-y-1 transform border border-slate-100" />
+                        </div>
                     </div>
                 </div>
             </section>
 
-            {/* Footer */}
+            {/* Pricing Section */}
+            <section className="py-32 bg-slate-50" id="pricing">
+                <div className="page-container text-center max-w-4xl">
+                    <span className="text-accent font-bold tracking-widest text-sm uppercase">Pricing</span>
+                    <h2 className="text-4xl md:text-5xl font-bold text-slate-900 mt-4 mb-4">Simple, Transparent Pricing</h2>
+                    <p className="text-xl text-slate-500 mb-16">Stop paying per-seat. Start paying for performance.</p>
+
+                    <div className="grid md:grid-cols-3 gap-8 text-left">
+                        {/* Starter */}
+                        <div className="bg-white p-8 rounded-3xl border border-slate-200 shadow-sm hover:shadow-xl transition-all">
+                            <h3 className="text-xl font-bold text-slate-900 mb-2">Starter</h3>
+                            <div className="text-4xl font-bold text-slate-900 mb-4">$0</div>
+                            <p className="text-slate-500 text-sm mb-6">Perfect for trying out autonomous hiring.</p>
+                            <Link to="/register?plan=starter" className="w-full btn-secondary mb-8 block text-center">Get Started</Link>
+                            <ul className="space-y-3 text-sm text-slate-600">
+                                <li className="flex gap-2"><Check size={16} className="text-green-500" /> 1 Active Job Agent</li>
+                                <li className="flex gap-2"><Check size={16} className="text-green-500" /> 50 Candidates/mo</li>
+                                <li className="flex gap-2"><Check size={16} className="text-green-500" /> Basic Reporting</li>
+                            </ul>
+                        </div>
+
+                        {/* Pro */}
+                        <div className="bg-slate-900 text-white p-8 rounded-3xl border border-slate-800 shadow-2xl relative transform md:-translate-y-4">
+                            <div className="absolute top-0 right-0 bg-accent text-white text-xs font-bold px-3 py-1 rounded-bl-xl rounded-tr-2xl">POPULAR</div>
+                            <h3 className="text-xl font-bold mb-2">Growth</h3>
+                            <div className="text-4xl font-bold mb-4">$499<span className="text-lg text-slate-400 font-normal">/mo</span></div>
+                            <p className="text-slate-400 text-sm mb-6">For scaling teams hiring consistently.</p>
+                            <Link to="/register?plan=growth" className="w-full btn-primary mb-8 shadow-none bg-white text-slate-900 hover:bg-slate-100 block text-center">Start Free Trial</Link>
+                            <ul className="space-y-3 text-sm text-slate-300">
+                                <li className="flex gap-2"><Check size={16} className="text-accent" /> Unlimited Job Agents</li>
+                                <li className="flex gap-2"><Check size={16} className="text-accent" /> 1,000 Candidates/mo</li>
+                                <li className="flex gap-2"><Check size={16} className="text-accent" /> Advanced AI Screening</li>
+                                <li className="flex gap-2"><Check size={16} className="text-accent" /> Dedicated Success Manager</li>
+                            </ul>
+                        </div>
+
+                        {/* Enterprise */}
+                        <div className="bg-white p-8 rounded-3xl border border-slate-200 shadow-sm hover:shadow-xl transition-all" id="enterprise">
+                            <h3 className="text-xl font-bold text-slate-900 mb-2">Enterprise</h3>
+                            <div className="text-4xl font-bold text-slate-900 mb-4">Custom</div>
+                            <p className="text-slate-500 text-sm mb-6">Full control & security for large orgs.</p>
+                            <a href="mailto:sales@hirelens.com" className="w-full btn-secondary mb-8 block text-center">Contact Sales</a>
+                            <ul className="space-y-3 text-sm text-slate-600">
+                                <li className="flex gap-2"><Check size={16} className="text-green-500" /> Custom Integrations</li>
+                                <li className="flex gap-2"><Check size={16} className="text-green-500" /> SSO & Audit Logs</li>
+                                <li className="flex gap-2"><Check size={16} className="text-green-500" /> SLA Support</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            {/* Footer - Modified to work with links */}
             <footer className="bg-white border-t border-slate-200 py-16">
                 <div className="page-container grid md:grid-cols-4 gap-12">
                     <div className="col-span-1 md:col-span-2">
                         <div className="flex items-center gap-2 mb-6">
-                            <Bot className="w-8 h-8 text-accent" />
+                            <img src={logo} alt="HireLens" className="w-8 h-8" />
                             <span className="text-xl font-bold text-slate-900">HireLens</span>
                         </div>
                         <p className="text-slate-500 max-w-xs leading-relaxed">
-                            Building the future of autonomous recruitment.
+                            Building the future of autonomous recruitment. <br />
                             San Francisco, CA.
                         </p>
                     </div>
                     <div>
                         <h4 className="font-bold text-slate-900 mb-4">Product</h4>
                         <ul className="space-y-3 text-slate-500">
-                            <li className="hover:text-accent cursor-pointer transition-colors">Features</li>
-                            <li className="hover:text-accent cursor-pointer transition-colors">Security</li>
-                            <li className="hover:text-accent cursor-pointer transition-colors">Enterprise</li>
+                            <li><a href="#features" className="hover:text-accent transition-colors">Features</a></li>
+                            <li><a href="#pricing" className="hover:text-accent transition-colors">Pricing</a></li>
+                            <li><a href="#enterprise" className="hover:text-accent transition-colors">Enterprise</a></li>
                         </ul>
                     </div>
                     <div>
                         <h4 className="font-bold text-slate-900 mb-4">Company</h4>
                         <ul className="space-y-3 text-slate-500">
                             <li className="hover:text-accent cursor-pointer transition-colors">About</li>
-                            <li className="hover:text-accent cursor-pointer transition-colors">Blog</li>
                             <li className="hover:text-accent cursor-pointer transition-colors">Careers</li>
+                            <li className="hover:text-accent cursor-pointer transition-colors">Contact</li>
                         </ul>
                     </div>
                 </div>
@@ -236,6 +316,29 @@ const Landing = () => {
         </div>
     );
 };
+
+// Animated Nav Link Component
+const NavLink = ({ href, children }) => {
+    const [isHovered, setIsHovered] = React.useState(false);
+
+    return (
+        <a
+            href={href}
+            onMouseEnter={() => setIsHovered(true)}
+            onMouseLeave={() => setIsHovered(false)}
+            className="relative px-4 py-2 text-sm font-medium text-slate-600 hover:text-slate-900 transition-colors"
+        >
+            {children}
+            {isHovered && (
+                <motion.div
+                    layoutId="nav-pill"
+                    className="absolute inset-0 bg-white shadow-sm rounded-full -z-10"
+                    transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                />
+            )}
+        </a>
+    );
+}
 
 // 3D Tilt Component
 const TiltCard = ({ children }) => {
@@ -353,7 +456,7 @@ const features = [
     },
     {
         icon: <Star size={28} />,
-        title: "Instant Rank",
+        title: "Instant Ranking",
         desc: "Candidates are automatically ranked on your dashboard. Filter by technical skill, communication score, or overall fit."
     }
 ];

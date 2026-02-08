@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { Bot, LogOut, User, Menu, X, ChevronRight } from 'lucide-react';
+import logo from '../assets/HireLens.png';
 
 const Navbar = () => {
     const { user, logout } = useAuth();
@@ -29,9 +30,7 @@ const Navbar = () => {
                     <div className="flex items-center gap-12">
                         {/* Logo */}
                         <Link to="/" className="flex items-center gap-3 group">
-                            <div className="w-10 h-10 bg-gradient-primary rounded-xl flex items-center justify-center text-white shadow-lg shadow-accent/30 transition-transform group-hover:scale-105 group-hover:rotate-3">
-                                <Bot className="w-6 h-6" />
-                            </div>
+                            <img src={logo} alt="HireLens" className="w-10 h-10 rounded-xl object-contain shadow-lg transition-transform group-hover:scale-105" />
                             <span className="text-xl font-display font-bold tracking-tight text-primary">
                                 HireLens
                             </span>

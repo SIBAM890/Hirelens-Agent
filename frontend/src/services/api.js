@@ -33,8 +33,15 @@ export const hrAPI = {
     getCandidates: () => api.get('/hr/candidates'),
     getJobs: () => api.get('/hr/jobs'),
     updateStatus: (id, status) => api.put(`/hr/candidates/${id}/status`, { status }),
+    parseJobRequirements: (text) => api.post('/hr/parse-job-requirements', { text }),
 
-    getJob: (id) => api.get(`/hr/job/${id}`), // Needs endpoint
+    // Job Management
+    getJob: (id) => api.get(`/hr/jobs/${id}`),
+    updateJob: (id, jobData) => api.put(`/hr/jobs/${id}`, jobData, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+    }),
+
+
     getJobReport: (id) => api.get(`/hr/job-report/${id}`), // Needs endpoint
 };
 
@@ -51,6 +58,7 @@ export const candidateAPI = {
     finalizeProfile: (appId, formData) => api.post(`/candidate/finalize-profile/${appId}`, formData, {
         headers: { 'Content-Type': 'multipart/form-data' }
     }),
+    reportViolation: (data) => api.post('/proctor/alert', data),
 };
 
 export default api;

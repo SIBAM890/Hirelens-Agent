@@ -12,6 +12,7 @@ import Register from './pages/Auth/Register';
 // HR Pages
 import HRDashboard from './pages/HR/HRDashboard';
 import CreateJob from './pages/HR/CreateJob';
+import EditJob from './pages/HR/EditJob';
 import JobReport from './pages/HR/JobReport';
 
 // Candidate Pages
@@ -25,7 +26,7 @@ import Gate5_Result from './pages/Candidate/Gate5_Result';
 const App = () => {
     return (
         <AuthProvider>
-            <BrowserRouter>
+            <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
                 <AppContent />
             </BrowserRouter>
         </AuthProvider>
@@ -49,6 +50,7 @@ const AppContent = () => {
                 <Route element={<ProtectedRoute role="HR" />}>
                     <Route path="/hr/dashboard" element={<HRDashboard />} />
                     <Route path="/hr/create-job" element={<CreateJob />} />
+                    <Route path="/hr/edit-job/:jobId" element={<EditJob />} />
                     <Route path="/hr/job/:id" element={<JobReport />} />
                 </Route>
 

@@ -35,6 +35,7 @@ const HRDashboard = () => {
     const [stats, setStats] = useState({ total_applicants: 0, active_jobs: 0, interviews_today: 0, hires_made: 0 });
     const [chartData, setChartData] = useState([]);
     const [candidates, setCandidates] = useState([]);
+    const [jobs, setJobs] = useState([]);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
@@ -43,9 +44,10 @@ const HRDashboard = () => {
 
     const fetchDashboardData = async () => {
         try {
-            const [dashboardRes, candidatesRes] = await Promise.all([
+            const [dashboardRes, candidatesRes, jobsRes] = await Promise.all([
                 hrAPI.getDashboard(),
-                hrAPI.getCandidates()
+                hrAPI.getCandidates(),
+                hrAPI.getJobs()
             ]);
 
             // Merge or use mock data if API returns empty/low counts to keep it "stylish"
@@ -65,6 +67,9 @@ const HRDashboard = () => {
             // Combine real candidates with mock candidates for display
             // Real candidates first, then mock
             setCandidates([...realCandidates, ...MOCK_CANDIDATES]);
+
+            setJobs(jobsRes.data); // Store jobs
+
 
         } catch (error) {
             console.error("Error fetching dashboard data:", error);
@@ -180,28 +185,42 @@ const HRDashboard = () => {
                     </div>
 
                     {/* Quick Action / Recent Activity */}
+                    {/* Quick Action / Recent Activity */}
                     <div className="bg-slate-900 rounded-2xl p-6 text-white shadow-lg relative overflow-hidden">
                         <div className="absolute top-0 right-0 w-64 h-64 bg-accent/20 rounded-full blur-[80px] -translate-y-1/2 translate-x-1/2" />
 
-                        <h3 className="text-lg font-bold mb-1 relative z-10">AI Insights</h3>
-                        <p className="text-slate-400 text-sm mb-6 relative z-10">Candidates needing attention</p>
-
-                        <div className="space-y-4 relative z-10">
-                            {candidates.slice(0, 3).map((candidate, i) => (
-                                <div key={i} className="bg-white/10 backdrop-blur-md p-4 rounded-xl border border-white/10 flex items-start gap-3 hover:bg-white/15 transition-colors cursor-pointer">
-                                    <div className="w-2 h-2 rounded-full bg-amber-400 mt-2" />
-                                    <div>
-                                        <p className="text-sm font-semibold">{candidate.name}</p>
-                                        <p className="text-xs text-slate-400 mt-1">Score: {candidate.score} - {candidate.role}</p>
-                                    </div>
-                                </div>
-                            ))}
-                            {candidates.length === 0 && <p className="text-sm text-slate-500">No candidates yet.</p>}
+                        <div className="relative z-10 flex items-center justify-between mb-4">
+                            <div>
+                                <h3 className="text-lg font-bold">My Active Agents</h3>
+                                <p className="text-slate-400 text-sm">Manage your deployed agents</p>
+                            </div>
+                            <span className="text-xs font-bold bg-accent/20 text-accent px-2 py-1 rounded border border-accent/20">
+                                {jobs.length} Active
+                            </span>
                         </div>
 
-                        <Link to="/hr/create-job" className="w-full mt-6 bg-white text-slate-900 font-bold py-3 rounded-xl hover:bg-slate-100 transition-colors block text-center">
-                            Create New Job Agent
-                        </Link>
+                        <div className="space-y-3 relative z-10 max-h-[300px] overflow-y-auto pr-2 custom-scrollbar">
+                            {jobs.map(job => (
+                                <div key={job.id} className="bg-white/10 backdrop-blur-md p-3 rounded-xl border border-white/10 flex items-center justify-between hover:bg-white/15 transition-colors group">
+                                    <div className="flex-1 min-w-0 mr-3">
+                                        <p className="text-sm font-semibold truncate">{job.title}</p>
+                                        <p className="text-xs text-slate-400 truncate">{job.description ? job.description.substring(0, 40) : "No description"}...</p>
+                                    </div>
+                                    <Link to={`/hr/edit-job/${job.id}`} className="bg-white text-slate-900 hover:bg-accent hover:text-white px-3 py-1.5 rounded-lg text-xs font-bold transition-all opacity-0 group-hover:opacity-100 whitespace-nowrap">
+                                        Edit
+                                    </Link>
+                                </div>
+                            ))}
+                            {jobs.length === 0 && (
+                                <div className="text-center py-6 border-2 border-dashed border-white/10 rounded-xl">
+                                    <p className="text-sm text-slate-500">No agents deployed yet.</p>
+                                </div>
+                            )}
+
+                            <Link to="/hr/create-job" className="w-full mt-4 bg-accent text-white font-bold py-3 rounded-xl hover:bg-accent-hover transition-colors flex items-center justify-center gap-2 shadow-lg shadow-accent/20">
+                                <Bot size={18} /> Deploy New Agent
+                            </Link>
+                        </div>
                     </div>
                 </div>
 

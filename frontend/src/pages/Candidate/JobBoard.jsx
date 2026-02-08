@@ -33,7 +33,7 @@ const JobBoard = () => {
             // But our endpoint expects candidate_id as query param? Let's check api.js
 
             // Assuming api.startApplication(jobId, candidateId)
-            const { data } = await candidateAPI.startApplication(jobId, user.user_id);
+            const { data } = await candidateAPI.startApplication(jobId, user.id);
 
             alert(`Application Started! ID: ${data.application_id}. Redirecting to Gate 1...`);
 

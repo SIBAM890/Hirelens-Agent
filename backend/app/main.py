@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from app.routers import auth, hr_agent, candidate_flow
+from app.routers import auth, hr_agent, candidate_flow, proctoring
 from app.core import database, config
 
 app = FastAPI(title="HireLens Agent API")
@@ -21,6 +21,7 @@ database.Base.metadata.create_all(bind=database.engine)
 app.include_router(auth.router)
 app.include_router(hr_agent.router)
 app.include_router(candidate_flow.router)
+app.include_router(proctoring.router)
 
 @app.get("/")
 def read_root():
