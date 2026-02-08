@@ -107,3 +107,4 @@ dist/
 .tmp
 .env.example (remove if not applicable)
 "*.db" 
+"backend/hirelens_v2.db" 
