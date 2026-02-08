@@ -15,6 +15,10 @@ def register(user: UserCreate, db: Session = Depends(get_db)):
     if db_user:
         raise HTTPException(status_code=400, detail="Username already registered")
     
+    db_email = db.query(User).filter(User.email == user.email).first()
+    if db_email:
+        raise HTTPException(status_code=400, detail="Email already registered")
+    
     hashed_password = pwd_context.hash(user.password)
     new_user = User(
         username=user.username,
@@ -22,11 +26,21 @@ def register(user: UserCreate, db: Session = Depends(get_db)):
         hashed_password=hashed_password,
         role=user.role
     )
-    db.add(new_user)
-    db.commit()
-    db.refresh(new_user)
+    try:
+        db.add(new_user)
+        db.commit()
+        db.refresh(new_user)
+    except Exception as e:
+        db.rollback()
+        print(f"Registration Error: {e}")
+        raise HTTPException(status_code=500, detail="Database Error: Could not register user.")
     
-    return {"access_token": new_user.username, "token_type": "bearer"}
+    return {
+        "access_token": new_user.username, 
+        "token_type": "bearer",
+        "role": new_user.role,
+        "user_id": new_user.id
+    }
 
 @router.post("/login", response_model=Token)
 def login(user: UserLogin, db: Session = Depends(get_db)):

@@ -59,6 +59,11 @@ const Navbar = () => {
                                         {user.role}
                                     </span>
                                 </div>
+                                {user.role === 'HR' && (
+                                    <Link to="/hr/create-job" className="hidden md:flex items-center gap-2 btn-primary py-2 px-4 text-xs">
+                                        <Bot size={16} /> Create Job Agent
+                                    </Link>
+                                )}
                                 <button
                                     onClick={logout}
                                     className="flex items-center gap-2 text-slate-500 hover:text-red-500 transition-colors text-sm font-medium px-3 py-2 hover:bg-red-50 rounded-lg"
@@ -97,28 +102,30 @@ const Navbar = () => {
             </div>
 
             {/* Mobile Menu */}
-            {mobileMenuOpen && (
-                <div className="md:hidden absolute top-20 left-0 w-full bg-white border-b border-gray-100 shadow-lg p-4 flex flex-col gap-4 animate-fade-in-up">
-                    {!user && (
-                        <>
-                            <a href="#features" className="block py-2 text-slate-600 font-medium" onClick={() => setMobileMenuOpen(false)}>Features</a>
-                            <a href="#how-it-works" className="block py-2 text-slate-600 font-medium" onClick={() => setMobileMenuOpen(false)}>How it works</a>
-                            <hr className="border-gray-100" />
-                            <Link to="/login" className="block py-2 text-slate-600 font-medium" onClick={() => setMobileMenuOpen(false)}>Login</Link>
-                            <Link to="/register" className="btn-primary text-center justify-center w-full" onClick={() => setMobileMenuOpen(false)}>Get Started</Link>
-                        </>
-                    )}
-                    {user && (
-                        <button
-                            onClick={() => { logout(); setMobileMenuOpen(false); }}
-                            className="flex items-center gap-2 text-red-500 font-medium py-2"
-                        >
-                            <LogOut size={16} /> Logout
-                        </button>
-                    )}
-                </div>
-            )}
-        </nav>
+            {
+                mobileMenuOpen && (
+                    <div className="md:hidden absolute top-20 left-0 w-full bg-white border-b border-gray-100 shadow-lg p-4 flex flex-col gap-4 animate-fade-in-up">
+                        {!user && (
+                            <>
+                                <a href="#features" className="block py-2 text-slate-600 font-medium" onClick={() => setMobileMenuOpen(false)}>Features</a>
+                                <a href="#how-it-works" className="block py-2 text-slate-600 font-medium" onClick={() => setMobileMenuOpen(false)}>How it works</a>
+                                <hr className="border-gray-100" />
+                                <Link to="/login" className="block py-2 text-slate-600 font-medium" onClick={() => setMobileMenuOpen(false)}>Login</Link>
+                                <Link to="/register" className="btn-primary text-center justify-center w-full" onClick={() => setMobileMenuOpen(false)}>Get Started</Link>
+                            </>
+                        )}
+                        {user && (
+                            <button
+                                onClick={() => { logout(); setMobileMenuOpen(false); }}
+                                className="flex items-center gap-2 text-red-500 font-medium py-2"
+                            >
+                                <LogOut size={16} /> Logout
+                            </button>
+                        )}
+                    </div>
+                )
+            }
+        </nav >
     );
 };
 

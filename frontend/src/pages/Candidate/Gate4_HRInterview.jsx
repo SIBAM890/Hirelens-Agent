@@ -1,149 +1,155 @@
-import React, { useState } from 'react';
-import { motion } from 'framer-motion';
-import { Mic, MicOff, Video, Sparkles, User, Briefcase } from 'lucide-react';
-import SpeechRecognition, { useSpeechRecognition } from 'react-speech-recognition';
-import { candidateAPI } from '../../services/api';
-import AudioVisualizer from '../../components/AudioVisualizer';
+import React, { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Mic, MicOff, Video, VideoOff, PhoneOff, MessageSquare, User, Bot, Volume2, Briefcase } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import 'regenerator-runtime/runtime';
 
 const Gate4_HRInterview = () => {
-    const { transcript, listening, resetTranscript } = useSpeechRecognition();
-    const [aiState, setAiState] = useState('IDLE'); // IDLE, LISTENING, SPEAKING, THINKING
-    const [messages, setMessages] = useState([]);
     const navigate = useNavigate();
+    const [isMicOn, setIsMicOn] = useState(true);
+    const [isVideoOn, setIsVideoOn] = useState(true);
+    const [conversation, setConversation] = useState([
+        { role: 'ai', text: "Hi! I'm Sarah from HR. I'm really impressed with your technical assessment results." },
+        { role: 'ai', text: "Now I'd love to chat about your career goals and what you're looking for in your next role." }
+    ]);
 
-    // 🤖 AI Voice Output
-    const speak = (text) => {
-        setAiState('SPEAKING');
-        const utterance = new SpeechSynthesisUtterance(text);
-        utterance.rate = 1.1; // Slightly faster/friendlier?
-        utterance.pitch = 1.2; // Higher pitch for "Friendly HR" persona
-        utterance.onend = () => setAiState('IDLE');
-        window.speechSynthesis.speak(utterance);
-    };
+    // HR Persona (Warmer, softer colors)
+    const personaColor = 'rose';
 
-    const handleSend = async () => {
-        SpeechRecognition.stopListening();
-        setAiState('THINKING');
-        const userMsg = transcript;
-        setMessages(prev => [...prev, { role: 'user', text: userMsg }]);
-
-        try {
-            // Call AI Backend with "HR" type
-            const response = await candidateAPI.chatAgent(userMsg, "HR");
-            const aiResponse = response.data.agent_message;
-
-            setMessages(prev => [...prev, { role: 'ai', text: aiResponse }]);
-            speak(aiResponse);
-
-            // Logic to move to Gate 5 after X interactions? 
-            // For demo, let's say after 4 exchanges.
-            if (messages.length >= 4) {
-                setTimeout(() => navigate('/candidate/gate-5'), 5000);
-            }
-
-        } catch (err) {
-            setAiState('IDLE');
-            console.error(err);
-        }
-        resetTranscript();
+    const handleEndCall = () => {
+        // Navigate to results or trust score analysis
+        navigate('/candidate/result'); // Assuming Gate 5 is result/score
     };
 
     return (
-        <div className="min-h-screen bg-orange-50/30 flex flex-col items-center justify-center relative overflow-hidden font-sans">
-            {/* Background Ambience - Warm */}
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,_var(--tw-gradient-stops))] from-orange-100/50 via-white to-white opacity-70" />
+        <div className="h-screen bg-slate-900 flex flex-col overflow-hidden font-sans relative">
 
-            {/* Header */}
-            <div className="absolute top-8 left-8 flex items-center gap-3 bg-white px-4 py-2 rounded-full shadow-sm border border-orange-100 z-20">
-                <div className="w-2.5 h-2.5 bg-orange-500 rounded-full animate-pulse shadow-[0_0_8px_rgba(249,115,22,0.6)]" />
-                <span className="font-bold text-xs tracking-wider text-orange-600">CULTURE FIT ASSESSMENT</span>
-            </div>
+            {/* Main Video Area */}
+            <div className="flex-1 relative flex items-center justify-center p-6">
 
-            {/* 🧠 THE AI AVATAR */}
-            <div className="relative z-10 flex flex-col items-center mb-8 mt-10">
-                <div className="relative">
-                    {/* Glowing Aura (Warmer colors) */}
-                    <motion.div
-                        animate={{
-                            scale: aiState === 'SPEAKING' ? [1, 1.1, 1] : 1,
-                            opacity: aiState === 'SPEAKING' ? 0.3 : 0.1,
-                        }}
-                        transition={{ duration: 1.5, repeat: Infinity }}
-                        className={`w-56 h-56 rounded-full blur-3xl absolute top-0 left-0 -z-10 bg-orange-500`}
-                    />
-
-                    {/* The Orb */}
-                    <div className="w-48 h-48 rounded-full border-8 border-white shadow-2xl flex items-center justify-center bg-orange-50 relative overflow-hidden">
-                        <div className={`absolute inset-0 opacity-20 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')]`} />
-
-                        {/* Dynamic Core */}
-                        <div className={`w-36 h-36 rounded-full bg-gradient-to-br transition-all duration-1000 shadow-inner ${aiState === 'THINKING' ? 'from-orange-400 to-red-500 animate-spin-slow' :
-                                aiState === 'SPEAKING' ? 'from-orange-300 to-yellow-400 scale-105' :
-                                    'from-gray-300 to-gray-400'
-                            }`} />
-
-                        {/* Status Icon Overlay */}
-                        <div className="absolute inset-0 flex items-center justify-center text-white drop-shadow-md">
-                            {aiState === 'THINKING' && <Sparkles className="animate-pulse" size={40} />}
-                            {aiState === 'LISTENING' && <Mic className="animate-bounce" size={40} />}
-                        </div>
-                    </div>
-                </div>
-
-                {/* 🎵 THE VISUALIZER COMPONENT */}
-                <div className="mt-8 scale-75 opacity-70">
-                    <AudioVisualizer state={aiState} />
-                </div>
-            </div>
-
-            {/* Transcript Log */}
-            <div className="w-full max-w-2xl h-[400px] overflow-y-auto p-6 bg-white rounded-3xl border border-orange-100 shadow-xl shadow-orange-100/50 mb-10 scrollbar-thin scrollbar-thumb-orange-100">
-                {messages.length === 0 && (
-                    <div className="flex flex-col items-center justify-center h-full text-center space-y-4 opacity-60">
-                        <div className="w-16 h-16 bg-orange-50 rounded-2xl flex items-center justify-center text-orange-500 mb-2">
-                            <Briefcase size={32} />
-                        </div>
-                        <p className="text-gray-500 font-medium">"Hi! I'm here to learn more about you.<br />Tell me about a time you worked in a team..."</p>
-                    </div>
-                )}
-                {messages.map((m, i) => (
-                    <div key={i} className={`mb-6 flex w-full ${m.role === 'ai' ? 'justify-start' : 'justify-end'}`}>
-                        <div className={`flex max-w-[85%] items-end gap-2 ${m.role === 'ai' ? 'flex-row' : 'flex-row-reverse'}`}>
-
-                            {/* Avatar Icons */}
-                            <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 ${m.role === 'ai' ? 'bg-orange-100 text-orange-600' : 'bg-gray-100 text-gray-600'}`}>
-                                {m.role === 'ai' ? <Briefcase size={16} /> : <User size={16} />}
+                {/* AI Avatar / Feed */}
+                <div className="relative w-full max-w-5xl aspect-video bg-slate-800 rounded-3xl overflow-hidden shadow-2xl border border-slate-700/50">
+                    {/* Placeholder for 3D Avatar */}
+                    <div className="absolute inset-0 bg-gradient-to-b from-slate-800 to-slate-900 flex items-center justify-center">
+                        <div className="relative w-64 h-64 rounded-full bg-rose-500/10 flex items-center justify-center animate-pulse-slow">
+                            <div className="w-48 h-48 rounded-full bg-rose-500/20 flex items-center justify-center">
+                                <Briefcase size={80} className="text-rose-400" />
                             </div>
 
-                            <div className={`p-4 rounded-2xl shadow-sm text-sm leading-relaxed ${m.role === 'ai'
-                                ? 'bg-orange-50 border border-orange-100 text-gray-700 rounded-bl-none'
-                                : 'bg-gray-800 text-white rounded-br-none'
-                                }`}>
-                                {m.text}
+                            {/* Audio Visualizer Waves (Mock, softer for HR) */}
+                            <div className="absolute -bottom-12 flex items-end justify-center gap-1 h-12">
+                                {[...Array(8)].map((_, i) => (
+                                    <motion.div
+                                        key={i}
+                                        className="w-2 bg-rose-500 rounded-full"
+                                        animate={{ height: [15, 35, 15] }}
+                                        transition={{ duration: 0.8 + Math.random() * 0.5, repeat: Infinity, ease: "easeInOut" }}
+                                    />
+                                ))}
                             </div>
                         </div>
                     </div>
-                ))}
-            </div>
 
-            {/* Controls */}
-            <div className="flex flex-col items-center gap-4 relative z-20">
-                <button
-                    onClick={listening ? handleSend : SpeechRecognition.startListening}
-                    className={`p-6 rounded-full transition-all duration-300 transform hover:scale-105 active:scale-95 shadow-lg ${listening
-                        ? 'bg-red-500 shadow-red-200 hover:shadow-red-300'
-                        : 'bg-orange-500 shadow-orange-200 hover:shadow-orange-300 hover:bg-orange-600'
-                        }`}
+                    <div className="absolute top-6 right-6">
+                        <div className="bg-black/40 backdrop-blur-md px-4 py-2 rounded-full border border-white/10 flex items-center gap-2">
+                            <div className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
+                            <span className="text-xs font-medium text-white/90">REC 08:30</span>
+                        </div>
+                    </div>
+
+                    <div className="absolute top-6 left-6">
+                        <div className="bg-rose-500/20 backdrop-blur-md px-4 py-2 rounded-full border border-rose-500/30 flex items-center gap-2">
+                            <Bot size={14} className="text-rose-400" />
+                            <span className="text-xs font-bold text-rose-100 uppercase tracking-widest">HR Cultural Fit</span>
+                        </div>
+                    </div>
+
+                    {/* Captions Overlay */}
+                    <div className="absolute bottom-6 left-0 right-0 px-12 text-center pointer-events-none">
+                        <AnimatePresence>
+                            {conversation.slice(-1).map((msg, i) => (
+                                <motion.div
+                                    key={i}
+                                    initial={{ opacity: 0, y: 20 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    exit={{ opacity: 0, y: -10 }}
+                                    className="inline-block bg-black/60 backdrop-blur-md px-6 py-3 rounded-2xl text-lg font-medium text-white shadow-lg max-w-3xl"
+                                >
+                                    {msg.text}
+                                </motion.div>
+                            ))}
+                        </AnimatePresence>
+                    </div>
+                </div>
+
+                {/* User Camera PIP */}
+                <motion.div
+                    drag
+                    dragConstraints={{ left: 0, right: 300, top: 0, bottom: 300 }}
+                    className="absolute top-10 right-10 w-64 aspect-video bg-slate-800 rounded-2xl shadow-2xl border-2 border-slate-700 overflow-hidden cursor-move hidden lg:block"
                 >
-                    {listening ? <MicOff size={32} className="text-white" /> : <Mic size={32} className="text-white" />}
+                    {isVideoOn ? (
+                        <div className="w-full h-full bg-slate-700 flex items-center justify-center">
+                            <User className="text-slate-500" size={32} />
+                        </div>
+                    ) : (
+                        <div className="w-full h-full bg-slate-900 flex items-center justify-center">
+                            <div className="w-12 h-12 rounded-full bg-slate-800 flex items-center justify-center">
+                                <VideoOff className="text-red-500" size={20} />
+                            </div>
+                        </div>
+                    )}
+                </motion.div>
+            </div>
+
+            {/* Bottom Controls Bar */}
+            <div className="h-24 bg-slate-900 border-t border-slate-800 flex items-center justify-center gap-6 relative z-20">
+                <ControlBtn
+                    icon={isMicOn ? <Mic /> : <MicOff />}
+                    label={isMicOn ? "Mute" : "Unmute"}
+                    isActive={isMicOn}
+                    onClick={() => setIsMicOn(!isMicOn)}
+                />
+                <ControlBtn
+                    icon={isVideoOn ? <Video /> : <VideoOff />}
+                    label={isVideoOn ? "Stop Video" : "Star Video"}
+                    isActive={isVideoOn}
+                    onClick={() => setIsVideoOn(!isVideoOn)}
+                />
+
+                <button
+                    onClick={handleEndCall}
+                    className="flex flex-col items-center gap-1 group px-4"
+                >
+                    <div className="w-14 h-14 rounded-full bg-red-600 hover:bg-red-500 flex items-center justify-center transition-all shadow-lg shadow-red-900/20 group-hover:scale-105">
+                        <PhoneOff className="text-white fill-current" size={24} />
+                    </div>
+                    <span className="text-xs font-medium text-slate-400 group-hover:text-white transition-colors">End Call</span>
                 </button>
-                <p className="text-orange-900/40 font-medium text-sm tracking-wide">
-                    {listening ? "Listening... (Tap to Send)" : "Tap Microphone to Speak"}
-                </p>
+
+                <ControlBtn
+                    icon={<MessageSquare />}
+                    label="Chat"
+                />
+                <ControlBtn
+                    icon={<Briefcase />}
+                    label="Role Info"
+                />
             </div>
         </div>
     );
 };
+
+const ControlBtn = ({ icon, label, isActive = true, onClick }) => (
+    <button
+        onClick={onClick}
+        className="flex flex-col items-center gap-2 group min-w-[70px]"
+    >
+        <div className={`w-12 h-12 rounded-full flex items-center justify-center transition-all duration-200 ${isActive ? 'bg-slate-800 text-slate-200 group-hover:bg-slate-700' : 'bg-red-500/10 text-red-500 border border-red-500/50'}`}>
+            {React.cloneElement(icon, { size: 20 })}
+        </div>
+        <span className="text-xs font-medium text-slate-500 group-hover:text-slate-300 transition-colors">{label}</span>
+    </button>
+);
 
 export default Gate4_HRInterview;

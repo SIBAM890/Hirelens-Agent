@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import Navbar from './components/Navbar';
 import ProtectedRoute from './components/ProtectedRoute';
@@ -26,35 +26,46 @@ const App = () => {
     return (
         <AuthProvider>
             <BrowserRouter>
-                <Navbar />
-                <Routes>
-                    {/* Public Routes */}
-                    <Route path="/" element={<Landing />} />
-                    <Route path="/login" element={<Login />} />
-                    <Route path="/register" element={<Register />} />
-
-                    {/* HR Routes - Protected */}
-                    <Route element={<ProtectedRoute role="HR" />}>
-                        <Route path="/hr/dashboard" element={<HRDashboard />} />
-                        <Route path="/hr/create-job" element={<CreateJob />} />
-                        <Route path="/hr/job/:id" element={<JobReport />} />
-                    </Route>
-
-                    {/* Candidate Routes - Protected */}
-                    <Route element={<ProtectedRoute role="CANDIDATE" />}>
-                        <Route path="/candidate/jobs" element={<JobBoard />} />
-                        <Route path="/candidate/gate-1" element={<Gate1_Quiz />} />
-                        <Route path="/candidate/gate-2" element={<Gate2_Coding />} />
-                        <Route path="/candidate/gate-3" element={<Gate3_TechInterview />} />
-                        <Route path="/candidate/gate-4" element={<Gate4_HRInterview />} />
-                        <Route path="/candidate/gate-5" element={<Gate5_Result />} />
-                    </Route>
-
-                    {/* Fallback */}
-                    <Route path="*" element={<Navigate to="/" />} />
-                </Routes>
+                <AppContent />
             </BrowserRouter>
         </AuthProvider>
+    );
+};
+
+const AppContent = () => {
+    const location = useLocation();
+    const isLanding = location.pathname === '/';
+
+    return (
+        <>
+            {!isLanding && <Navbar />}
+            <Routes>
+                {/* Public Routes */}
+                <Route path="/" element={<Landing />} />
+                <Route path="/login" element={<Login />} />
+                <Route path="/register" element={<Register />} />
+
+                {/* HR Routes - Protected */}
+                <Route element={<ProtectedRoute role="HR" />}>
+                    <Route path="/hr/dashboard" element={<HRDashboard />} />
+                    <Route path="/hr/create-job" element={<CreateJob />} />
+                    <Route path="/hr/job/:id" element={<JobReport />} />
+                </Route>
+
+                {/* Candidate Routes - Protected */}
+                <Route element={<ProtectedRoute role="CANDIDATE" />}>
+                    <Route path="/candidate/jobs" element={<JobBoard />} />
+                    <Route path="/candidate/gate-1" element={<Gate1_Quiz />} />
+                    <Route path="/candidate/gate-2" element={<Gate2_Coding />} />
+                    <Route path="/candidate/gate-3" element={<Gate3_TechInterview />} />
+                    <Route path="/candidate/gate-4" element={<Gate4_HRInterview />} />
+                    <Route path="/candidate/gate-5" element={<Gate5_Result />} />
+                </Route>
+
+                {/* Fallback */}
+                <Route path="*" element={<Navigate to="/" />} />
+            </Routes>
+        </>
     );
 };
 

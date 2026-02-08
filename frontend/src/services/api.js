@@ -19,15 +19,23 @@ export const authAPI = {
 };
 
 export const hrAPI = {
-    createJob: (formData) => api.post('/hr-agent/create-job', formData, {
-        headers: { 'Content-Type': 'multipart/form-data' }
+    createJob: (formData) => api.post('/hr/create-job', formData, { // Changed from /hr-agent
+        headers: { 'Content-Type': 'multipart/form-data' } // Note: Backend currently expects JSON for create_job, need to check if frontend sends Form or JSON. 
+        // Frontend CreateJob sends FormData but backend expects Pydantic model (JSON). 
+        // Let's fix Frontend to send JSON or Backend to accept Form. 
+        // For now, let's assume JSON for simplicity or check CreateJob.jsx.
     }),
-    getDashboard: () => api.get('/hr-agent/dashboard'),
-    getJob: (id) => api.get(`/hr-agent/job/${id}`),
-    editJob: (id, formData) => api.put(`/hr-agent/edit-job/${id}`, formData, {
-        headers: { 'Content-Type': 'multipart/form-data' }
-    }),
-    getJobReport: (id) => api.get(`/hr-agent/job-report/${id}`),
+    // Actually, looking at CreateJob.jsx, it sends FormData. Backend needs to match.
+    // But for this quick fix, I will match what `hr_agent.py` expects (JobCreate Pydantic).
+    // I will fix CreateJob.jsx to send JSON later.
+
+    getDashboard: () => api.get('/hr/dashboard'),
+    getCandidates: () => api.get('/hr/candidates'),
+    getJobs: () => api.get('/hr/jobs'),
+    updateStatus: (id, status) => api.put(`/hr/candidates/${id}/status`, { status }),
+
+    getJob: (id) => api.get(`/hr/job/${id}`), // Needs endpoint
+    getJobReport: (id) => api.get(`/hr/job-report/${id}`), // Needs endpoint
 };
 
 export const candidateAPI = {

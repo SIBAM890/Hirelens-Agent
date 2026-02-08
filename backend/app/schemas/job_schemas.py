@@ -9,7 +9,7 @@ class JobCreate(BaseModel):
 class JobResponse(JobCreate):
     id: int
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 class CodeSubmission(BaseModel):
     code: str

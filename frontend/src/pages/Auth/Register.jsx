@@ -1,15 +1,19 @@
 import React, { useState } from 'react';
 import { authAPI } from '../../services/api';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { Bot, ArrowRight, User, Building2, Briefcase, CheckCircle } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const Register = () => {
+    const location = useLocation();
+    const searchParams = new URLSearchParams(location.search);
+    const initialRole = searchParams.get('role')?.toUpperCase() === 'HR' ? 'HR' : 'CANDIDATE';
+
     const [formData, setFormData] = useState({
         username: '',
         email: '',
         password: '',
-        role: 'CANDIDATE'
+        role: initialRole
     });
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
