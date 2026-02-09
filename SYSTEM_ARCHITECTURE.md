@@ -26,13 +26,13 @@ graph TD
     end
 
     %% Frontend
-    subgraph Frontend["React Setup (Vite)"]
+    subgraph Frontend["React Setup - Vite"]
         direction TB
         
         %% Core
         App[App.jsx / Router]:::frontend
         AuthContext[Auth Context]:::frontend
-        API_Service[API Service (Axios)]:::frontend
+        API_Service[API Service - Axios]:::frontend
 
         %% Pages
         Landing[Landing Page]:::frontend
@@ -45,14 +45,14 @@ graph TD
         
         %% Candidate Flow
         Job_Board[Job Board]:::frontend
-        Gate1[Gate 1: AI Quiz]:::frontend
-        Gate2[Gate 2: Coding Challenge]:::frontend
-        Gate3[Gate 3: Tech Interview]:::frontend
-        Gate4[Gate 4: HR Interview]:::frontend
-        Gate5[Gate 5: Results]:::frontend
+        Gate1[Gate 1 - AI Quiz]:::frontend
+        Gate2[Gate 2 - Coding Challenge]:::frontend
+        Gate3[Gate 3 - Tech Interview]:::frontend
+        Gate4[Gate 4 - HR Interview]:::frontend
+        Gate5[Gate 5 - Results]:::frontend
 
         %% Proctoring
-        WebCam[WebCam / FaceAPI]:::frontend
+        WebCam[WebCam / FaceAI]:::frontend
     end
 
     %% Backend
@@ -73,9 +73,9 @@ graph TD
 
         %% Services
         subgraph Services["Services"]
-            Auth_Svc[Auth Service (JWT/Bcrypt)]:::backend
+            Auth_Svc[Auth Service - JWT Bcrypt]:::backend
             Email_Svc[Email Service]:::backend
-            HR_Agent[HR Agent (Resume/Job Parsing)]:::backend
+            HR_Agent[HR Agent - Resume Job Parsing]:::backend
             Review_Svc[Code Review Service]:::backend
             Proctor_Svc[Proctoring Service]:::backend
         end
@@ -141,6 +141,7 @@ graph TD
     ORM --> Users_Table
     ORM --> Jobs_Table
     ORM --> Assessment_Table
+
 
 ```
 
