@@ -20,7 +20,10 @@ class Assessment(Base):
     coding_status = Column(String, default="PENDING")
     
     # Gate 3 & 4: Interview
+    tech_interview_transcript = Column(Text, default="[]") # JSON string of conversation
     tech_interview_score = Column(Float, default=0.0)
+    
+    hr_interview_transcript = Column(Text, default="[]") # JSON string of conversation
     hr_interview_score = Column(Float, default=0.0)
     
     # Gate 5: Final

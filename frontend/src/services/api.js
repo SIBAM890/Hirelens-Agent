@@ -55,6 +55,11 @@ export const candidateAPI = {
     submitCode: (appId, code, lang) => api.post(`/candidate/submit-code/${appId}`, { code, language: lang }),
 
     chatAgent: (msg, type) => api.post(`/candidate/chat-response`, { message: msg, interview_type: type }),
+
+    // Gate 3 & 4: Interview
+    startInterview: (appId, type = 'technical') => api.post(`/candidate/interview/start/${appId}?type=${type}`),
+    answerInterview: (appId, answer, type = 'technical') => api.post(`/candidate/interview/process/${appId}?type=${type}`, { answer }),
+
     finalizeProfile: (appId, formData) => api.post(`/candidate/finalize-profile/${appId}`, formData, {
         headers: { 'Content-Type': 'multipart/form-data' }
     }),

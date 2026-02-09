@@ -49,3 +49,19 @@ def login(user: UserLogin, db: Session = Depends(get_db)):
         raise HTTPException(status_code=400, detail="Invalid credentials")
     
     return {"access_token": db_user.username, "token_type": "bearer", "role": db_user.role, "user_id": db_user.id}
+
+# --- Authentication Dependency ---
+from fastapi.security import OAuth2PasswordBearer
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/login")
+
+def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)):
+    # For now, the token is simply the username (as seen in login/register)
+    # In a real app, verify JWT here
+    user = db.query(User).filter(User.username == token).first()
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid authentication credentials",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    return user

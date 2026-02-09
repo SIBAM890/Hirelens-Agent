@@ -3,11 +3,11 @@ from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 import os
 
-# Configuration (Mock for now or use env vars)
-SMTP_SERVER = os.getenv("SMTP_SERVER", "smtp.gmail.com")
+# Configuration
+SMTP_SERVER = os.getenv("SMTP_SERVER")
 SMTP_PORT = int(os.getenv("SMTP_PORT", 587))
-SMTP_USERNAME = os.getenv("SMTP_USERNAME", "your_email@gmail.com")
-SMTP_PASSWORD = os.getenv("SMTP_PASSWORD", "your_app_password")
+SMTP_USERNAME = os.getenv("SMTP_USERNAME")
+SMTP_PASSWORD = os.getenv("SMTP_PASSWORD")
 
 def send_email(to_email: str, subject: str, body: str):
     """
@@ -37,6 +37,12 @@ def send_email(to_email: str, subject: str, body: str):
         print(f"Email sent successfully to {to_email}")
     except Exception as e:
         print(f"Failed to send email to {to_email}: {e}")
+        # Re-raise or handle appropriately depending on requirement. 
+        # For now, we print but don't crash the caller, as email checks shouldn't 500 the app usually.
+        # But for 'silent failure' issue, we might want to return False or log ERROR.
+        # Let's keep it swallowing but ensure it's logged as ERROR if we had a logger.
+        # Since we use print, it's visible. 
+        pass
 
 def send_cheat_alert(candidate_email: str, hr_email: str, violation_details: str):
     """

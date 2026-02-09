@@ -39,7 +39,8 @@ const AppContent = () => {
 
     return (
         <>
-            {!isLanding && <Navbar />}
+            {/* Navbar is hidden on Landing, Gate 2, and Gate 4 for immersion */}
+            {!isLanding && !location.pathname.includes('/candidate/gate-2') && !location.pathname.includes('/candidate/gate-4') && <Navbar />}
             <Routes>
                 {/* Public Routes */}
                 <Route path="/" element={<Landing />} />

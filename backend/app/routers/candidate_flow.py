@@ -117,6 +117,106 @@ def submit_code(application_id: int, submission: job_schemas.CodeSubmission, db:
     return result_json
 
 # --- GATE 3 & 4: INTERVIEW BOT ---
+
+from app.services.interview_service import generate_interview_question, evaluate_answer
+from pydantic import BaseModel
+
+class InterviewInput(BaseModel):
+    answer: str
+    history: list = []
+
+@router.post("/interview/start/{application_id}")
+def start_interview(application_id: int, type: str = "technical", db: Session = Depends(get_db)):
+    app = db.query(Assessment).filter(Assessment.id == application_id).first()
+    if not app: raise HTTPException(status_code=404, detail="App not found")
+    
+    job = db.query(Job).filter(Job.id == app.job_id).first()
+    
+    # Generate First Question
+    initial_question = generate_interview_question([], job.title, job.description, interview_type=type)
+    
+    # Initialize Transcript
+    transcript = [{"role": "ai", "text": initial_question}]
+    
+    if type == "HR":
+        app.hr_interview_transcript = json.dumps(transcript)
+    else:
+        app.tech_interview_transcript = json.dumps(transcript)
+        
+    db.commit()
+    
+    return {"question": initial_question, "history": transcript}
+
+@router.post("/interview/process/{application_id}")
+def process_interview_answer(application_id: int, input_data: InterviewInput, type: str = "technical", db: Session = Depends(get_db)):
+    app = db.query(Assessment).filter(Assessment.id == application_id).first()
+    if not app: raise HTTPException(status_code=404, detail="App not found")
+    
+    job = db.query(Job).filter(Job.id == app.job_id).first()
+    
+    # Select Transcript based on Type
+    if type == "HR":
+        transcript_json = app.hr_interview_transcript
+    else:
+        transcript_json = app.tech_interview_transcript
+        
+    current_transcript = json.loads(transcript_json) if transcript_json else []
+    
+    # 1. Update History with User Answer
+    current_transcript.append({"role": "user", "text": input_data.answer})
+    
+    # 2. Evaluate Answer
+    last_question = current_transcript[-2]["text"] if len(current_transcript) > 1 else "Introduction"
+    eval_result = evaluate_answer(last_question, input_data.answer, job.title, interview_type=type)
+    
+    # Update running score
+    if type == "HR":
+        current_score = app.hr_interview_score or 0.0
+        new_score = (current_score + eval_result.get("score", 0)) / 2 if current_score > 0 else eval_result.get("score", 0)
+        app.hr_interview_score = new_score
+    else:
+        current_score = app.tech_interview_score or 0.0
+        new_score = (current_score + eval_result.get("score", 0)) / 2 if current_score > 0 else eval_result.get("score", 0)
+        app.tech_interview_score = new_score
+    
+    # 3. Decision Point
+    user_turns = len([m for m in current_transcript if m["role"] == "user"])
+    max_turns = 5
+    
+    if user_turns >= max_turns:
+        completion_msg = "Thank you. This concludes the interview section."
+        if type == "technical":
+            app.current_stage = "GATE_4"
+            completion_msg = "Technical interview complete. Redirecting to HR Round..."
+        elif type == "HR":
+            app.current_stage = "COMPLETED" 
+            completion_msg = "Thank you! We will review your profile and get back to you."
+            
+        current_transcript.append({"role": "ai", "text": completion_msg})
+        
+        # Save Final State
+        if type == "HR":
+             app.hr_interview_transcript = json.dumps(current_transcript)
+        else:
+             app.tech_interview_transcript = json.dumps(current_transcript)
+             
+        db.commit()
+        return {"question": completion_msg, "history": current_transcript, "completed": True}
+    
+    # 4. Generate Next Question
+    next_question = generate_interview_question(current_transcript, job.title, job.description, interview_type=type)
+    current_transcript.append({"role": "ai", "text": next_question})
+    
+    # Save State
+    if type == "HR":
+            app.hr_interview_transcript = json.dumps(current_transcript)
+    else:
+            app.tech_interview_transcript = json.dumps(current_transcript)
+            
+    db.commit()
+    
+    return {"question": next_question, "history": current_transcript, "completed": False}
+
 @router.post("/chat-response")
 def chat_with_agent(message: str, interview_type: str):
     return {"agent_message": get_ai_response([], message, interview_type)}

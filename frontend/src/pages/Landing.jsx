@@ -45,12 +45,17 @@ const Landing = () => {
                     </div>
 
                     <div className="flex items-center gap-4">
-                        <Link to="/register?role=HR" className="text-sm font-bold text-slate-600 hover:text-accent hidden lg:block transition-colors">For Employers</Link>
-                        <div className="h-5 w-px bg-slate-200 hidden lg:block" />
-                        <Link to="/login" className="text-sm font-bold text-slate-600 hover:text-slate-900 hidden sm:block transition-colors">Log in</Link>
-                        <Link to="/register?role=CANDIDATE" className="btn-primary py-2.5 px-6 text-sm hover:shadow-xl hover:shadow-accent/20">
-                            For Candidates
-                        </Link>
+                        {/* Box 1: Roles */}
+                        <div className="hidden md:flex items-center bg-slate-100/80 backdrop-blur-sm p-1 rounded-full border border-slate-200">
+                            <Link to="/register?role=HR" className="px-4 py-1.5 text-xs font-bold text-slate-500 hover:bg-white hover:text-slate-900 hover:shadow-sm rounded-full transition-all">Employer</Link>
+                            <Link to="/register?role=CANDIDATE" className="px-4 py-1.5 text-xs font-bold text-slate-500 hover:bg-white hover:text-slate-900 hover:shadow-sm rounded-full transition-all">Candidate</Link>
+                        </div>
+
+                        {/* Box 2: Auth */}
+                        <div className="flex items-center bg-white p-1 rounded-full border border-slate-200 shadow-sm">
+                            <Link to="/login" className="px-5 py-2 text-sm font-bold text-slate-600 hover:text-slate-900 transition-colors">Login</Link>
+                            <Link to="/register" className="px-5 py-2 text-sm font-bold text-white bg-blue-600 hover:bg-blue-700 rounded-full shadow-lg shadow-blue-500/20 transition-all">Sign Up</Link>
+                        </div>
                     </div>
                 </motion.div>
             </nav>
@@ -110,14 +115,8 @@ const Landing = () => {
                         </motion.div>
                     </motion.div>
 
-                    {/* 3D Tilt Dashboard Preview (Placeholder until real 3D asset is ready) */}
+                    {/* 3D Tilt Dashboard Preview */}
                     <TiltCard>
-                        {/* ... (TiltCard content) ... */}
-                        {/* Note: I cannot replace the whole TiltCard content easily without including it all. 
-                        I will just focus on the specific button and valid ranges. 
-                        Wait, I can't split the replacement if I want to do multiple things in one file efficiently 
-                        unless I use multi_replace. Let me use multi_replace for this file as there are scattered changes.
-                    */}
                         <div className="relative rounded-2xl border border-slate-200 shadow-2xl bg-white/50 backdrop-blur-sm p-3 mx-auto max-w-5xl group">
                             <img src={dashboardClean} alt="Dashboard" className="w-full h-auto rounded-xl shadow-inner border border-slate-100" />
 

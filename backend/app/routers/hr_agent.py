@@ -157,6 +157,8 @@ async def parse_job_requirements(request: JobRequirementRequest):
         data = json.loads(cleaned_text)
         return data
         
+    except HTTPException:
+        raise
     except Exception as e:
         print(f"Error parsing job: {e}")
         # Return generic error to client, log specific error

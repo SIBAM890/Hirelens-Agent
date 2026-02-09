@@ -2,7 +2,7 @@ from fastapi import APIRouter, HTTPException, BackgroundTasks, Depends
 from pydantic import BaseModel, Field
 from app.services.email_service import send_cheat_alert
 import datetime
-from app.routers .auth import get_current_user # Assuming auth module exists based on other files
+from app.routers.auth import get_current_user
 
 router = APIRouter(prefix="/proctor", tags=["Proctoring"])
 
@@ -13,6 +13,11 @@ class ViolationReport(BaseModel):
     # Fix: Use default_factory to evaluate timestamp per-request
     timestamp: str = Field(default_factory=lambda: datetime.datetime.now().isoformat())
 
+import logging
+
+# Configure logger
+logger = logging.getLogger(__name__)
+
 @router.post("/alert")
 async def report_violation(
     report: ViolationReport, 
@@ -20,7 +25,9 @@ async def report_violation(
     # Fix: Add authentication to protect sensitive endpoint
     current_user: dict = Depends(get_current_user) 
 ):
-    print(f"[PROCTOR] Violation received from {current_user.get('username', 'Unknown')}: {report}")
+    # current_user is a Pydantic model, so we access attributes directly
+    username = getattr(current_user, 'username', 'Unknown')
+    logger.info(f"[PROCTOR] Violation received from {username}: {report}")
     
     # Logic to trigger email alert
     # We use background tasks so the API returns quickly to the frontend

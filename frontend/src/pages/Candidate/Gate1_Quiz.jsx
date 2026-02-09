@@ -19,6 +19,8 @@ const Gate1_Quiz = () => {
     // Proctoring State
     const [warnings, setWarnings] = useState(0);
     const [isModelLoaded, setIsModelLoaded] = useState(false);
+    const [violationMessage, setViolationMessage] = useState(null); // Replaces alert()
+    const [detectionStatus, setDetectionStatus] = useState('initializing'); // initializing, active, warning
     const webcamRef = useRef(null);
     const navigate = useNavigate();
 
@@ -64,43 +66,60 @@ const Gate1_Quiz = () => {
         fetchQuiz();
     }, []);
 
-    // Load Face API Models
+    // Load Face API Models with Retry/Fallback
     useEffect(() => {
         const loadModels = async () => {
-            // Fix: Use local models instead of external URL for security/reliability
-            const MODEL_URL = '/models';
-            try {
-                await Promise.all([
-                    faceapi.nets.tinyFaceDetector.loadFromUri(MODEL_URL),
-                    // faceapi.nets.faceLandmark68Net.loadFromUri(MODEL_URL),
-                    // faceapi.nets.faceRecognitionNet.loadFromUri(MODEL_URL),
-                ]);
-                setIsModelLoaded(true);
-                console.log("Face API Models Loaded");
-            } catch (err) {
-                console.error("Failed to load models. Ensure /public/models exists.", err);
+            const urls = [
+                'https://justadudewhohacks.github.io/face-api.js/models',
+                'https://raw.githubusercontent.com/justadudewhohacks/face-api.js/master/weights'
+            ];
+
+            for (const url of urls) {
+                try {
+                    console.log(`Attempting to load models from: ${url}`);
+                    await faceapi.nets.tinyFaceDetector.loadFromUri(url);
+                    // await faceapi.nets.faceLandmark68Net.loadFromUri(url); 
+
+                    setIsModelLoaded(true);
+                    setDetectionStatus('active'); // Temporarily set to active to show loaded, loop will update it
+                    console.log("Face API Models Loaded Successfully");
+                    return; // Success, exit loop
+                } catch (err) {
+                    console.error(`Failed to load from ${url}`, err);
+                }
             }
+
+            // If all fail
+            setDetectionStatus('error');
+            setViolationMessage("Failed to load AI models. Check internet connection.");
         };
         loadModels();
     }, []);
 
-    // Stable Violation Handler (No Side Effects in State Updater)
+    // Stable Violation Handler with Debounce
+    const lastViolationTime = useRef(0);
+
     const handleViolation = (type) => {
-        if (scoreRef.current !== null) return; // Use Ref to check score without dependency
+        if (scoreRef.current !== null) return;
 
-        // Calculate new count using Ref to avoid state closure issues
+        // Debounce: Ignore violations within 2 seconds of the last one
+        const now = Date.now();
+        if (now - lastViolationTime.current < 2000) return;
+        lastViolationTime.current = now;
+
         const newCount = warningsRef.current + 1;
-        setWarnings(newCount); // Trigger re-render
+        setWarnings(newCount);
 
-        // Side Effects (API & Alert)
         reportViolation(type);
 
         const msg = `Warning ${newCount}/${MAX_WARNINGS}: ${type}`;
-        alert(msg);
+
+        setViolationMessage(msg);
+        setTimeout(() => setViolationMessage(null), 5000);
 
         if (newCount >= MAX_WARNINGS) {
-            alert("Maximum warnings exceeded. Submitting assessment automatically.");
-            handleSubmit(true);
+            setViolationMessage("Maximum warnings exceeded. Submitting assessment automatically.");
+            setTimeout(() => handleSubmit(true), 2000);
         }
     };
 
@@ -119,14 +138,19 @@ const Gate1_Quiz = () => {
 
                     if (detections.length === 0) {
                         handleViolation("No Face Detected");
+                        setDetectionStatus('warning');
                     } else if (detections.length > 1) {
                         handleViolation("Multiple Faces Detected");
+                        setDetectionStatus('warning');
+                    } else {
+                        setDetectionStatus('active');
                     }
                 } catch (err) {
                     console.error("Face detection error", err);
+                    setDetectionStatus('error');
                 }
             }
-        }, 3000);
+        }, 1000);
 
         return () => clearInterval(interval);
     }, [isModelLoaded, score]); // Dependencies
@@ -306,7 +330,7 @@ const Gate1_Quiz = () => {
             </header>
 
             {/* Webcam Overlay (Draggable logic omitted for simplicity, fixed position) */}
-            <div className={`fixed bottom-8 right-8 w-48 h-36 bg-black rounded-xl overflow-hidden shadow-2xl border-2 z-50 transition-all ${warnings > 1 ? 'border-red-500 animate-pulse' : 'border-slate-200'}`}>
+            <div className={`fixed bottom-8 right-8 w-48 h-36 bg-black rounded-xl overflow-hidden shadow-2xl border-2 z-50 transition-all ${warnings > 1 || detectionStatus === 'warning' ? 'border-red-500 animate-pulse' : 'border-slate-200'}`}>
                 <Webcam
                     ref={webcamRef}
                     audio={false}
@@ -315,10 +339,30 @@ const Gate1_Quiz = () => {
                     className="w-full h-full object-cover"
                     onUserMediaError={(err) => alert("Camera Access Denied! Please enable camera permission.")}
                 />
-                <div className="absolute top-2 left-2 bg-black/50 backdrop-blur text-white text-[10px] px-2 py-1 rounded">
-                    AI Monitoring
+                <div className={`absolute top-2 left-2 backdrop-blur text-white text-[10px] px-2 py-1 rounded flex items-center gap-1 ${detectionStatus === 'active' ? 'bg-green-500/50' : detectionStatus === 'warning' ? 'bg-red-500/50' : detectionStatus === 'error' ? 'bg-red-700/80' : 'bg-black/50'}`}>
+                    <div className={`w-2 h-2 rounded-full ${detectionStatus === 'active' ? 'bg-green-400' : detectionStatus === 'warning' ? 'bg-red-400' : detectionStatus === 'error' ? 'bg-red-500' : 'bg-yellow-400 animate-pulse'}`} />
+                    {detectionStatus === 'active' ? 'Monitoring Active' : detectionStatus === 'warning' ? 'Detection Warning' : detectionStatus === 'error' ? 'Model Error' : 'Initializing...'}
                 </div>
             </div>
+
+            {/* Violation Toast Overlay */}
+            <AnimatePresence>
+                {violationMessage && (
+                    <motion.div
+                        initial={{ opacity: 0, y: -50 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -50 }}
+                        className="fixed top-24 left-1/2 transform -translate-x-1/2 z-[60] bg-red-600 text-white px-6 py-4 rounded-xl shadow-2xl flex items-center gap-4 max-w-md w-full"
+                    >
+                        <AlertTriangle size={32} className="text-white shrink-0" />
+                        <div>
+                            <h4 className="font-bold text-lg">Proctoring Alert</h4>
+                            <p className="text-sm opacity-90">{violationMessage}</p>
+                        </div>
+                        <button onClick={() => setViolationMessage(null)} className="ml-auto hover:bg-white/20 p-1 rounded-full"><X size={20} /></button>
+                    </motion.div>
+                )}
+            </AnimatePresence>
 
             {/* Quiz Content */}
             <main className="flex-1 max-w-4xl mx-auto w-full p-8 flex flex-col justify-center">
