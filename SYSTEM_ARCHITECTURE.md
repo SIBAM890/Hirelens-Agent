@@ -19,14 +19,14 @@ graph TD
     Admin((HR Manager)):::actor
 
     %% External Services
-    subgraph External_Services
+    subgraph External_Services["External Services"]
         direction TB
         Gemini[Gemini AI API]:::external
         SMTP[Email Service]:::external
     end
 
     %% Frontend
-    subgraph Frontend
+    subgraph Frontend["React Setup (Vite)"]
         direction TB
         
         %% Core
@@ -56,7 +56,7 @@ graph TD
     end
 
     %% Backend
-    subgraph Backend
+    subgraph Backend["FastAPI Backend"]
         direction TB
         
         %% Main App
@@ -85,7 +85,7 @@ graph TD
     end
 
     %% Database
-    subgraph Database
+    subgraph Database["SQLite"]
         Users_Table[(Users Table)]:::database
         Jobs_Table[(Jobs Table)]:::database
         Assessment_Table[(Assessments Table)]:::database

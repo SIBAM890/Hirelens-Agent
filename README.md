@@ -65,14 +65,14 @@ graph TD
     Admin((HR Manager))
 
     %% External Services
-    subgraph External_Services
+    subgraph External_Services["External Services"]
         direction TB
         Gemini[Gemini AI API]:::external
         SMTP[Email Service]:::external
     end
 
     %% Frontend
-    subgraph Frontend
+    subgraph Frontend["React Setup (Vite)"]
         direction TB
         App[App.jsx / Router]:::frontend
         API[API Service (Axios)]:::frontend
@@ -80,7 +80,7 @@ graph TD
     end
 
     %% Backend
-    subgraph Backend
+    subgraph Backend["FastAPI Backend"]
         direction TB
         Main[Main App Entry]:::backend
         Routers[Auth, HR, Candidate Routers]:::backend
@@ -89,7 +89,7 @@ graph TD
     end
 
     %% Database
-    subgraph Database
+    subgraph Database["SQLite"]
         DB[(HireLens DB)]:::database
     end
 
