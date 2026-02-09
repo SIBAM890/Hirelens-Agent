@@ -64,7 +64,7 @@ graph TD
         Middleware[CORS / Auth Middleware]:::backend
 
         %% Routers
-        subgraph Routers
+        subgraph Routers["Routers"]
             Auth_Router[Auth Router]:::backend
             HR_Router[HR Router]:::backend
             Cand_Router[Candidate Router]:::backend
@@ -72,7 +72,7 @@ graph TD
         end
 
         %% Services
-        subgraph Services
+        subgraph Services["Services"]
             Auth_Svc[Auth Service (JWT/Bcrypt)]:::backend
             Email_Svc[Email Service]:::backend
             HR_Agent[HR Agent (Resume/Job Parsing)]:::backend
@@ -85,7 +85,7 @@ graph TD
     end
 
     %% Database
-    subgraph Database["SQLite"]
+    subgraph Database["SQLite Database"]
         Users_Table[(Users Table)]:::database
         Jobs_Table[(Jobs Table)]:::database
         Assessment_Table[(Assessments Table)]:::database
