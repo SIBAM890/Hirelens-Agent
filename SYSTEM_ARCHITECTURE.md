@@ -8,11 +8,12 @@ HireLens Agent is a comprehensive AI-powered recruitment platform designed to au
 ```mermaid
 graph TD
     %% Styling
-    classDef frontend fill:#e1f5fe,stroke:#01579b,stroke-width:2px;
-    classDef backend fill:#e8f5e9,stroke:#2e7d32,stroke-width:2px;
-    classDef database fill:#fff3e0,stroke:#ef6c00,stroke-width:2px;
-    classDef external fill:#f3e5f5,stroke:#7b1fa2,stroke-width:2px;
-    classDef actor fill:#fff,stroke:#333,stroke-width:2px,stroke-dasharray: 5 5;
+classDef frontend fill:#eef2f6,stroke:#90a4ae,stroke-width:1.5px;
+classDef backend fill:#e8f0f5,stroke:#78909c,stroke-width:1.5px;
+classDef database fill:#e3e6ea,stroke:#607d8b,stroke-width:1.5px;
+classDef external fill:#f0f4f8,stroke:#90a4ae,stroke-width:1.5px;
+classDef actor fill:#ffffff,stroke:#455a64,stroke-width:1.5px,stroke-dasharray: 4 4;
+
 
     %% Actors
     User((Candidate)):::actor
