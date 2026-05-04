@@ -22,7 +22,7 @@ const Navbar = () => {
     const isLanding = location.pathname === '/';
 
     return (
-        <nav className={`fixed top-0 w-full z-50 transition-all duration-300 ${scrolled ? 'glass' : 'bg-transparent'}`}>
+        <nav className={`fixed top-0 w-full z-50 transition-all duration-300 ${isLanding ? (scrolled ? 'glass' : 'bg-transparent') : 'bg-white shadow-sm border-b border-slate-200'}`}>
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="flex items-center justify-between h-20">
 

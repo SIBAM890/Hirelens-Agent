@@ -1,10 +1,12 @@
 import React, { useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 import logo from '../assets/HireLens.png';
 import './LandingNew.css';
 
 const Landing = () => {
     const observerRef = useRef(null);
+    const { user } = useAuth();
 
     useEffect(() => {
         // Initialize elements with hidden state before observer
@@ -96,8 +98,16 @@ const Landing = () => {
                         <li><a href="#about">About</a></li>
                     </ul>
                     <div className="nav-right" style={{ display: 'flex', gap: '1rem' }}>
-                        <Link to="/login" style={{ color: 'var(--text-dark)', fontWeight: '600', textDecoration: 'none', display: 'flex', alignItems: 'center' }}>Login</Link>
-                        <Link to="/register?role=HR" className="btn btn-secondary btn-nav"><span>Start Hiring</span></Link>
+                        {user ? (
+                            <Link to={user.role === 'HR' ? "/hr/dashboard" : "/candidate/jobs"} className="btn btn-secondary btn-nav">
+                                <span>Go to Dashboard</span>
+                            </Link>
+                        ) : (
+                            <>
+                                <Link to="/login" style={{ color: 'var(--text-dark)', fontWeight: '600', textDecoration: 'none', display: 'flex', alignItems: 'center' }}>Login</Link>
+                                <Link to="/register?role=HR" className="btn btn-secondary btn-nav"><span>Start Hiring</span></Link>
+                            </>
+                        )}
                     </div>
                 </nav>
             </header>

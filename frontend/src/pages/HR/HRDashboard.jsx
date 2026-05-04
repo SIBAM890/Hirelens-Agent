@@ -200,7 +200,7 @@ const HRDashboard = () => {
         <div className="min-h-screen bg-slate-50 font-sans text-slate-900 pb-20 pt-20">
 
             {/* Header - Adjusted sticky top to accommodate fixed navbar */}
-            <header className="bg-white border-b border-slate-200 sticky top-20 z-30">
+            <header className="bg-white border-b border-slate-200">
                 <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
                     <h1 className="text-xl font-bold text-slate-900">Dashboard</h1>
                     <div className="flex items-center gap-4">

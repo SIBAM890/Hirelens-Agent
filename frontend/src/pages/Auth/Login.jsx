@@ -9,10 +9,21 @@ const Login = () => {
         username: '',
         password: ''
     });
-    const { login } = useAuth();
+    const { login, user, loading: authLoading } = useAuth();
     const navigate = useNavigate();
     const [loading, setLoading] = useState(false);
     const [notification, setNotification] = useState(null);
+
+    // Only redirect AFTER auth state has fully loaded from localStorage
+    React.useEffect(() => {
+        if (!authLoading && user) {
+            if (user.role === 'HR') navigate('/hr/dashboard', { replace: true });
+            else navigate('/candidate/jobs', { replace: true });
+        }
+    }, [user, authLoading, navigate]);
+
+    // Show nothing while auth is loading to prevent flash
+    if (authLoading) return null;
 
     const handleSubmit = async (e) => {
         e.preventDefault();

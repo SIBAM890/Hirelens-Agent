@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { authAPI } from '../../services/api';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { Bot, ArrowRight, User, Building2, Briefcase, CheckCircle } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useAuth } from '../../context/AuthContext';
 
 const Register = () => {
     const location = useLocation();
@@ -16,7 +17,19 @@ const Register = () => {
         role: initialRole
     });
     const [loading, setLoading] = useState(false);
+    const { user, loading: authLoading } = useAuth();
     const navigate = useNavigate();
+
+    // Only redirect AFTER auth state has fully loaded from localStorage
+    useEffect(() => {
+        if (!authLoading && user) {
+            if (user.role === 'HR') navigate('/hr/dashboard', { replace: true });
+            else navigate('/candidate/jobs', { replace: true });
+        }
+    }, [user, authLoading, navigate]);
+
+    // Show nothing while auth is loading to prevent flash
+    if (authLoading) return null;
 
     const isHR = formData.role === 'HR';
 
