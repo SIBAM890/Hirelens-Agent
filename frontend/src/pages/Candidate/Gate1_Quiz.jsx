@@ -66,35 +66,7 @@ const Gate1_Quiz = () => {
         fetchQuiz();
     }, []);
 
-    // Load Face API Models with Retry/Fallback
-    useEffect(() => {
-        const loadModels = async () => {
-            const urls = [
-                'https://justadudewhohacks.github.io/face-api.js/models',
-                'https://raw.githubusercontent.com/justadudewhohacks/face-api.js/master/weights'
-            ];
-
-            for (const url of urls) {
-                try {
-                    console.log(`Attempting to load models from: ${url}`);
-                    await faceapi.nets.tinyFaceDetector.loadFromUri(url);
-                    // await faceapi.nets.faceLandmark68Net.loadFromUri(url); 
-
-                    setIsModelLoaded(true);
-                    setDetectionStatus('active'); // Temporarily set to active to show loaded, loop will update it
-                    console.log("Face API Models Loaded Successfully");
-                    return; // Success, exit loop
-                } catch (err) {
-                    console.error(`Failed to load from ${url}`, err);
-                }
-            }
-
-            // If all fail
-            setDetectionStatus('error');
-            setViolationMessage("Failed to load AI models. Check internet connection.");
-        };
-        loadModels();
-    }, []);
+    // Face API replaced by Gemini Vision API
 
     // Stable Violation Handler with Debounce
     const lastViolationTime = useRef(0);
@@ -123,37 +95,59 @@ const Gate1_Quiz = () => {
         }
     };
 
-    // Face Detection Loop
+    // Gemini Vision Proctoring Loop (via Backend)
     useEffect(() => {
-        if (!isModelLoaded || !webcamRef.current) return;
-        // Don't run if already submitted (scoreRef check inside handleViolation is mostly for events, but good here too)
+        if (!webcamRef.current) return;
         if (score !== null) return;
 
+        let isAnalyzing = false;
+        
         const interval = setInterval(async () => {
-            // Check if component is still mounted and webcam is ready
-            if (webcamRef.current && webcamRef.current.video.readyState === 4) {
-                const video = webcamRef.current.video;
+            // Only proceed if camera is ready and we aren't already waiting for the backend
+            if (webcamRef.current && webcamRef.current.video.readyState === 4 && !isAnalyzing) {
+                isAnalyzing = true;
+                setDetectionStatus('analyzing');
+                
                 try {
-                    const detections = await faceapi.detectAllFaces(video, new faceapi.TinyFaceDetectorOptions());
+                    const video = webcamRef.current.video;
+                    
+                    // Create a canvas to resize the image (compress to 640x480 to save payload size)
+                    const canvas = document.createElement('canvas');
+                    canvas.width = 640;
+                    canvas.height = 480;
+                    const ctx = canvas.getContext('2d');
+                    
+                    // Draw video frame to canvas
+                    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+                    
+                    // Get compressed JPEG base64 (0.7 quality)
+                    const imageSrc = canvas.toDataURL('image/jpeg', 0.7);
+                    
+                    // Strip base64 prefix
+                    const base64Data = imageSrc.split(',')[1];
 
-                    if (detections.length === 0) {
-                        handleViolation("No Face Detected");
-                        setDetectionStatus('warning');
-                    } else if (detections.length > 1) {
-                        handleViolation("Multiple Faces Detected");
+                    // Call our FastAPI backend
+                    const res = await candidateAPI.analyzeFrame(base64Data);
+                    
+                    if (res.data.status === 'VIOLATION') {
+                        handleViolation(res.data.reason);
                         setDetectionStatus('warning');
                     } else {
                         setDetectionStatus('active');
                     }
+
                 } catch (err) {
-                    console.error("Face detection error", err);
+                    console.error("Proctoring API error", err);
                     setDetectionStatus('error');
+                } finally {
+                    isAnalyzing = false;
                 }
             }
-        }, 1000);
+        }, 5000); // Check every 5 seconds
 
+        // Proper cleanup on unmount
         return () => clearInterval(interval);
-    }, [isModelLoaded, score]); // Dependencies
+    }, [score]); // Dependencies
 
     // Tab Focus & Fullscreen Monitoring
     useEffect(() => {

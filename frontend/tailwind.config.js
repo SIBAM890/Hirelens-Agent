@@ -14,29 +14,29 @@ export default {
       colors: {
         primary: {
           DEFAULT: '#0f172a', // Slate 900
-          light: '#334155',   // Slate 700
-          dark: '#020617',    // Slate 950
+          light: '#334155',
+          dark: '#020617',
         },
         accent: {
-          DEFAULT: '#4f46e5', // Indigo 600
-          hover: '#4338ca',   // Indigo 700
-          light: '#818cf8',   // Indigo 400
+          DEFAULT: '#6366f1', // Glossy Indigo
+          hover: '#4f46e5',
+          light: '#818cf8',
         },
-        background: '#f8fafc', // Slate 50
+        background: '#f8fafc', // Clean white/slate-50
         surface: '#ffffff',
-        success: '#10b981',    // Emerald 500
-        warning: '#f59e0b',    // Amber 500
-        error: '#ef4444',      // Red 500
+        success: '#10b981',
+        warning: '#f59e0b',
+        error: '#ef4444',
       },
       backgroundImage: {
         'gradient-primary': 'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)',
-        'gradient-accent': 'linear-gradient(135deg, #4f46e5 0%, #6366f1 100%)',
+        'gradient-accent': 'linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%)', // Glossy Tech Gradient
         'gradient-surface': 'linear-gradient(180deg, rgba(255,255,255,0.8) 0%, rgba(255,255,255,0.4) 100%)',
       },
       boxShadow: {
         'glass': '0 8px 32px 0 rgba(31, 38, 135, 0.07)',
         'glass-sm': '0 4px 16px 0 rgba(31, 38, 135, 0.05)',
-        'neon': '0 0 20px rgba(79, 70, 229, 0.3)',
+        'neon': '0 0 20px rgba(99, 102, 241, 0.4)', // Glossy indigo glow
       },
       animation: {
         'float': 'float 6s ease-in-out infinite',

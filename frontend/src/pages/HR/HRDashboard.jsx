@@ -91,6 +91,109 @@ const HRDashboard = () => {
         }
     };
 
+    const handleDownloadReport = async () => {
+        try {
+            // Dynamically load libraries to avoid manual npm install for demo
+            const { jsPDF } = await import('https://esm.sh/jspdf@2.5.1');
+            const autoTable = (await import('https://esm.sh/jspdf-autotable@3.8.1')).default;
+            
+            const doc = new jsPDF();
+            
+            // Header
+            doc.setFontSize(22);
+            doc.setTextColor(26, 26, 26);
+            doc.text('HireLens Executive Report', 14, 20);
+            
+            doc.setFontSize(11);
+            doc.setTextColor(100, 100, 100);
+            doc.text('Recruitment Velocity & Active Pipeline Analytics', 14, 28);
+            
+            // Stats Box
+            doc.setDrawColor(200, 200, 200); 
+            doc.setFillColor(247, 245, 242); 
+            doc.rect(14, 35, 182, 25, 'FD');
+            
+            doc.setFontSize(10);
+            doc.setTextColor(100, 100, 100);
+            doc.text('Total Applicants', 20, 45);
+            doc.text('Active Agents', 65, 45);
+            doc.text('Interviews Today', 115, 45);
+            doc.text('Hires Made', 160, 45);
+            
+            doc.setFontSize(14);
+            doc.setTextColor(26, 26, 26);
+            doc.setFont(undefined, 'bold');
+            doc.text(String(stats.total_applicants), 20, 52);
+            doc.text(String(stats.active_jobs), 65, 52);
+            doc.text(String(stats.interviews_today), 115, 52);
+            doc.text(String(stats.hires_made), 160, 52);
+            
+            // Candidates Table
+            const tableColumn = ["Candidate", "Role", "Trust Score", "Status"];
+            const tableRows = candidates.map(c => [
+                c.name, c.role, c.score + "%", c.status
+            ]);
+            
+            doc.autoTable({
+                startY: 70,
+                head: [tableColumn],
+                body: tableRows,
+                theme: 'grid',
+                headStyles: { fillColor: [15, 23, 42], textColor: [255, 255, 255] }, // Slate 900 bg, white text
+                alternateRowStyles: { fillColor: [248, 250, 252] } // Slate 50
+            });
+            
+            doc.save('HireLens_Executive_Report.pdf');
+        } catch (error) {
+            console.warn("jsPDF import failed, falling back to print window", error);
+            const printWindow = window.open('', '', 'width=800,height=600');
+            printWindow.document.write(`
+                <html>
+                <head>
+                    <title>HireLens Executive Report</title>
+                    <style>
+                        body { font-family: sans-serif; padding: 40px; color: #0f172a; }
+                        .header { text-align: center; border-bottom: 2px solid #6366f1; padding-bottom: 20px; margin-bottom: 40px; }
+                        .header h1 { margin: 0; font-size: 28px; }
+                        .header p { color: #475569; margin-top: 10px; }
+                        .stats { display: flex; justify-content: space-between; margin-bottom: 40px; }
+                        .stat-box { background: #f8fafc; padding: 20px; border-radius: 12px; width: 22%; text-align: center; border-left: 4px solid #6366f1; }
+                        .stat-box h3 { margin: 0; font-size: 24px; color: #0f172a; }
+                        .stat-box p { margin: 5px 0 0; color: #475569; font-size: 14px; }
+                        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+                        th, td { border-bottom: 1px solid #e2e8f0; padding: 12px; text-align: left; }
+                        th { background: #0f172a; color: #ffffff; }
+                    </style>
+                </head>
+                <body>
+                    <div class="header">
+                        <h1>HireLens Executive Report</h1>
+                        <p>Recruitment Velocity & Active Pipeline Analytics</p>
+                    </div>
+                    <div class="stats">
+                        <div class="stat-box"><h3>${stats.total_applicants}</h3><p>Total Applicants</p></div>
+                        <div class="stat-box"><h3>${stats.active_jobs}</h3><p>Active Agents</p></div>
+                        <div class="stat-box"><h3>${stats.interviews_today}</h3><p>Interviews Today</p></div>
+                        <div class="stat-box"><h3>${stats.hires_made}</h3><p>Successful Hires</p></div>
+                    </div>
+                    <h2>Candidate Pipeline</h2>
+                    <table>
+                        <thead>
+                            <tr><th>Candidate</th><th>Role</th><th>Score</th><th>Status</th></tr>
+                        </thead>
+                        <tbody>
+                            ${candidates.map(c => `<tr><td><strong>${c.name}</strong></td><td>${c.role}</td><td>${c.score}%</td><td>${c.status}</td></tr>`).join('')}
+                        </tbody>
+                    </table>
+                </body>
+                </html>
+            `);
+            printWindow.document.close();
+            printWindow.focus();
+            setTimeout(() => { printWindow.print(); printWindow.close(); }, 500);
+        }
+    };
+
     if (loading) return <div className="min-h-screen pt-24 text-center">Loading Dashboard...</div>;
 
     return (
@@ -154,8 +257,8 @@ const HRDashboard = () => {
                                 <h3 className="text-lg font-bold text-slate-800">Recruitment Velocity</h3>
                                 <p className="text-sm text-slate-500">Applicant volume vs Hires over last 7 days</p>
                             </div>
-                            <button className="text-sm font-medium text-accent hover:text-accent-hover transition-colors">
-                                View Report
+                            <button onClick={handleDownloadReport} className="text-sm font-medium text-accent hover:text-accent-hover transition-colors flex items-center gap-2">
+                                <FileText size={16} /> Download Report
                             </button>
                         </div>
                         <div className="h-[300px] w-full">

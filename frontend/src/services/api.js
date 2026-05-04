@@ -64,6 +64,7 @@ export const candidateAPI = {
         headers: { 'Content-Type': 'multipart/form-data' }
     }),
     reportViolation: (data) => api.post('/proctor/alert', data),
+    analyzeFrame: (base64) => api.post('/proctor/analyze', { image_base64: base64 }),
 };
 
 export default api;

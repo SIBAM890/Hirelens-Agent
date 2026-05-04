@@ -43,3 +43,39 @@ async def report_violation(
     )
     
     return {"status": "logged", "message": "Violation reported"}
+
+class FrameData(BaseModel):
+    image_base64: str
+
+import google.generativeai as genai
+import os
+
+@router.post("/analyze")
+async def analyze_frame(
+    frame: FrameData,
+    current_user: dict = Depends(get_current_user)
+):
+    api_key = os.getenv("GEMINI_API_KEY")
+    if not api_key:
+        raise HTTPException(status_code=500, detail="GEMINI_API_KEY missing")
+    
+    genai.configure(api_key=api_key)
+    model = genai.GenerativeModel('gemini-1.5-flash')
+    
+    prompt = "You are an AI exam proctor. Analyze this webcam image. Rules: 1. There must be EXACTLY ONE person. 2. The person must be looking generally towards the screen. 3. No phones or other people allowed. If the person is missing, reply EXACTLY with 'No Face Detected'. If multiple people, reply 'Multiple Faces Detected'. If looking at phone, reply 'Phone Detected'. If looking far away, reply 'Looking Away'. If everything is normal, reply EXACTLY with 'OK'. Reply with NOTHING ELSE."
+    
+    try:
+        response = model.generate_content([
+            prompt,
+            {"mime_type": "image/jpeg", "data": frame.image_base64}
+        ])
+        
+        result = response.text.strip().replace('\n', '')
+        if result == 'OK':
+            return {"status": "OK"}
+        else:
+            # If it gave a long explanation instead of just the keywords, return the first 40 chars
+            return {"status": "VIOLATION", "reason": result[:40] + ("..." if len(result) > 40 else "")}
+    except Exception as e:
+        logger.error(f"Gemini Vision API error: {e}")
+        return {"status": "VIOLATION", "reason": "Backend AI Error"}

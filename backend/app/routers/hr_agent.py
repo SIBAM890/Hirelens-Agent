@@ -102,8 +102,8 @@ def get_candidates(db: Session = Depends(get_db)):
             "id": assessment.id,
             "name": username,
             "role": job_title,
-            "score": assessment.trust_score,
-            "status": assessment.status,
+            "score": assessment.quiz_score or 0,
+            "status": assessment.current_stage,
             "date": "Today" # Mock date
         })
     return candidates
@@ -116,7 +116,8 @@ async def parse_job_requirements(request: JobRequirementRequest):
         if not os.getenv("GEMINI_API_KEY"):
              raise HTTPException(status_code=500, detail="GEMINI_API_KEY is not set in environment variables")
              
-        model = genai.GenerativeModel('gemini-2.0-flash')
+        # Fallback to 2.5-flash 
+        model = genai.GenerativeModel('gemini-2.5-flash')
         
         prompt = f"""
         You are an expert HR assistant. Extract job details from the following text and return a JSON object that matches our form structure.

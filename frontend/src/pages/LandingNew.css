@@ -13,17 +13,17 @@
 
 .landing-new-wrapper {
     /* Colors */
-    --primary-color: #1a1a1a;
-    --secondary-color: #E8FF8B;
-    --page-bg: #efebe7;
-    --accent-pink: #FFB3E6;
-    --accent-yellow: #FFF9B3;
-    --accent-green: #D4F1D4;
-    --accent-brown-dark: #8b6c52;
-    --accent-brown-light: #e9dcc8;
+    --primary-color: #0f172a;
+    --secondary-color: #6366f1;
+    --page-bg: #f8fafc;
+    --accent-pink: #e0e7ff; /* soft indigo */
+    --accent-yellow: #f5f3ff; /* soft purple */
+    --accent-green: #ede9fe; /* soft violet */
+    --accent-brown-dark: #4f46e5;
+    --accent-brown-light: #7c3aed;
     --white: #FFFFFF;
-    --text-dark: #1a1a1a;
-    --text-gray: #666666;
+    --text-dark: #0f172a;
+    --text-gray: #475569;
     
     /* Spacing System */
     --space-xs: 0.5rem;
@@ -102,12 +102,12 @@
 
 .landing-new-wrapper .btn-secondary {
     background-color: var(--secondary-color);
-    color: var(--primary-color);
+    color: var(--white);
 }
 
 .landing-new-wrapper .btn-secondary:hover {
     transform: translateY(-2px);
-    box-shadow: 0 12px 30px rgba(232, 255, 139, 0.4);
+    box-shadow: 0 12px 30px rgba(99, 102, 241, 0.4);
 }
 
 .landing-new-wrapper .btn-nav::after { content: '→'; font-weight: 900; position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%) translateX(-20px); opacity: 0; transition: all 0.3s ease; font-size: 1.25rem; }
